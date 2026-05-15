@@ -1,0 +1,49 @@
+# Python
+__pycache__/
+*.py[cod]
+.ipynb_checkpoints/
+.venv/
+venv/
+env/
+
+# OS / editor
+.DS_Store
+Thumbs.db
+.vscode/
+.idea/
+
+# Sensitive or raw data
+data/raw/*
+data/interim/*
+data/external/private/*
+*response*.xlsx
+*admission*.xlsx
+*private*.xlsx
+!templates/card_sorting/*.xlsx
+
+# Keep public raw templates
+!data/raw/.gitkeep
+!data/raw/departments_raw.xlsx
+!data/raw/recommended_courses_raw.xlsx
+!data/raw/admission_scores_raw.xlsx
+!data/raw/raw_source_register.xlsx
+!data/raw/collection_checklist.xlsx
+!data/raw/card_sorting_responses/
+!data/raw/card_sorting_responses/.gitkeep
+!data/interim/.gitkeep
+!data/external/.gitkeep
+
+# Generated outputs that may be rebuilt
+results/figures/*
+results/tables/*
+!results/figures/.gitkeep
+!results/tables/.gitkeep
+
+# Local report builds
+*.aux
+*.bbl
+*.blg
+*.log
+*.out
+*.synctex.gz
+*.toc

@@ -1,0 +1,3 @@
+source_id,source_type,source_name,source_url_or_file,owner_or_publisher,collection_method,access_date,license_or_terms_note,used_for,reliability_note
+S001,official_api,CareerNet Major OpenAPI,https://www.career.go.kr/cnet/front/openapi/openApiMajorCenter.do,커리어넷,api,,,course subjects and department descriptions,official source
+
