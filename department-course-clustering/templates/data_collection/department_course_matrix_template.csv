@@ -1,0 +1,25 @@
+department_id,department_name,broad_field,selected_reason,calculus,geometry,probability_statistics,physics,chemistry,biology,earth_science,information,economics,ethics,other_relevant_courses
+D01,Architecture,engineering_design_boundary,Boundary case between engineering and design/planning,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0
+D02,Korean Language and Literature,humanities,Humanities reference field with language/literature course profile,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0
+D03,Psychology,social_science_humanities_boundary,Boundary case between social science and humanities,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0
+D04,Mechanical Engineering,engineering,Math/physics-oriented engineering reference field,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0
+D05,Chemistry,natural_science,Chemistry-centered natural science field,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0
+D06,Industrial Engineering,engineering_management_boundary,Boundary case linking engineering data and management,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0
+D07,Materials Science and Engineering,engineering,Chemistry/materials-related engineering field,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0
+D08,Naval Architecture and Ocean Engineering,engineering,Math/physics-oriented engineering field with regional industry relevance,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0
+D09,Medicine,medical_health,High-stakes biology/chemistry health-related field,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0
+D10,Mathematics,natural_science_quantitative,Quantitative field linked to statistics/computing/engineering,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0
+D11,Business Administration,social_science,Social science reference field relevant to counseling comparisons,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0
+D12,Pharmacy,medical_health_natural_science,Biology/chemistry health-related boundary field,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0
+D13,Sociology,social_science,Social science reference field with counseling relevance,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0
+D14,Economics,social_science_quantitative,Social science field linked to mathematics/statistics,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0
+D15,Life Science,natural_science,Biology-centered natural science field linked to health fields,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0
+D16,Media Communication,social_science_humanities_boundary,Boundary case between humanities social science and media fields,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0
+D17,Chemical Engineering,engineering_natural_science,Chemistry/materials-related engineering field,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0
+D18,Design,arts_design,Boundary case linked to architecture and media fields,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0
+D19,Food and Nutrition,natural_science_health,Biology/health-related field linked to life science and nursing,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0
+D20,Nursing,medical_health,Biology/health-related counseling-relevant field,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0
+D21,Electrical and Electronic Engineering,engineering,Math/physics/information-oriented engineering field,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0
+D22,History,humanities,Humanities reference field with social/historical course profile,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0
+D23,Applied Statistics,natural_science_social_science_boundary,Quantitative field linked to mathematics economics and data analysis,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0
+D24,Computer Science,engineering_information,Information/math-related engineering field,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0

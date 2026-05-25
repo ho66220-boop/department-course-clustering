@@ -1,49 +1,55 @@
-# Practical Use Plan
+# Future Practical Use Plan
 
-## Practical Question
+## Status Of This Document
 
-The practical question is:
+This document describes possible future extensions. It is not part of the simplified core Progress Meeting scope.
 
-> Can course-based department clustering help consultants generate reasonable alternative department candidates?
+The current term project is limited to exploratory course-based clustering of academic departments. It does not build a complete department recommendation system.
 
-This is different from asking whether the algorithm can replace consultants.
+## Current Core Project
 
-## Counseling Workflow Assumption
+The core project asks:
 
-The intended use case is:
+> Can recommended high-school course profiles produce interpretable clusters of academic departments for admission counseling support?
+
+The current analysis focuses on:
+
+- department-course matrix construction
+- baseline and refined course vectors
+- cosine similarity
+- hierarchical clustering
+- k-means comparison
+- preliminary cluster interpretation
+
+## Possible Future Practical Workflow
+
+A future counseling-support workflow could use the clustering results as one input among several:
 
 1. A student shows interest in one or more departments.
-2. The consultant checks course-preparation similarity.
-3. The consultant checks whether experts tend to co-recommend similar pairs.
-4. The consultant checks whether admission score ranges are practically comparable.
-5. The consultant uses the result as a candidate list, not as a final recommendation.
+2. A counselor inspects course-preparation similarity.
+3. Expert consensus is checked if consultant card sorting data are available.
+4. Admission score feasibility is checked if comparable score data are available.
+5. The counselor uses the result as supporting information, not as an automatic recommendation.
 
-## Prototype Output
+This workflow is not implemented as part of the current simplified project.
 
-For each input department, produce a candidate table.
+## Future Extensions
 
-| Rank | Candidate department | Course similarity | Expert consensus | Score difference | Counseling note |
-| ---: | --- | ---: | ---: | ---: | --- |
-| 1 | TBD | TBD | TBD | TBD | Strong candidate |
-| 2 | TBD | TBD | TBD | TBD | Similar courses but check feasibility |
-| 3 | TBD | TBD | TBD | TBD | Expert-supported alternative |
+Future work may include:
 
-## Interpretation Rules
+- expert consensus using consultant card sorting
+- comparison between course-based similarity and expert co-grouping
+- admission score feasibility analysis
+- disagreement case analysis
+- candidate-generation tables for counseling examples
+- validation in real counseling settings
 
-| Pattern | Counseling Interpretation |
-| --- | --- |
-| High course similarity, high expert consensus, small score difference | Strong practical alternative |
-| High course similarity, low expert consensus | Course overlap exists, but consultants do not naturally recommend together |
-| Low course similarity, high expert consensus | Consultants see a practical alternative beyond course preparation |
-| High course similarity, large score difference | Academically related but may target different grade bands |
+These extensions should be framed as optional final-stage or future work, not as required Progress Meeting deliverables.
 
-## Minimum Evidence Needed
+## Risk Of Overextension
 
-To argue practical usefulness, the final report should include:
+Adding expert consensus, admission scores, and candidate-generation tables too early can make the project look like a recommendation system. It can also expand the report beyond the scope of a 5-page exploratory clustering study.
 
-1. A dendrogram or heatmap showing course-based structure.
-2. A pairwise table comparing course similarity and expert consensus.
-3. A small set of disagreement cases.
-4. A candidate-generation table for 2-3 example input departments.
-5. A limitation paragraph explaining that final recommendations remain consultant-mediated.
+For the current term project, the safer claim is:
 
+> Course-profile vectors can support exploratory analysis of department similarity, but final counseling decisions require human interpretation and additional validation.

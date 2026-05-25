@@ -13,6 +13,7 @@ RAW = BASE / "data" / "raw"
 REP_FILE = EXTERNAL / "2028학년도 계열별 대표 모집단위별 반영과목(권장과목).xlsx"
 REG_FILE = EXTERNAL / "2028학년도 권역별 대학별 권장과목(반영과목).xlsx"
 SCORE_FILE = EXTERNAL / "지거국 교과 종합 컷 정리.xlsx"
+COMPREHENSIVE_SCORE_FILE = EXTERNAL / "종합_교과_컷.xlsx"
 
 
 ALIASES = {
@@ -78,6 +79,8 @@ ADMISSION_EXCLUDES = {
     "D15": ["원예생명", "동물생명", "식물생명", "환경생명"],
 }
 
+COURSE_EXCLUDES = ADMISSION_EXCLUDES
+
 COURSE_GROUPS = {
     "국어": "국어",
     "화법과 언어": "국어",
@@ -127,6 +130,18 @@ def clean_text(value: object) -> str:
     return re.sub(r"\s+", " ", str(value).replace("\n", " ")).strip()
 
 
+def parse_score(value: object) -> float | None:
+    if value is None:
+        return None
+    text = clean_text(value)
+    if not text or text in {"-", "None"}:
+        return None
+    try:
+        return float(text)
+    except ValueError:
+        return None
+
+
 def normalize(value: object) -> str:
     return re.sub(r"\s+", "", str(value or "")).replace("·", "").replace("/", "")
 
@@ -154,6 +169,9 @@ def match_department(unit_name: object, departments: list[dict[str, object]]) ->
     normalized_unit = normalize(unit_name)
     hits = []
     for department in departments:
+        department_id = department["id"]
+        if any(normalize(excluded) in normalized_unit for excluded in COURSE_EXCLUDES.get(department_id, [])):
+            continue
         for alias in ALIASES[department["id"]]:
             normalized_alias = normalize(alias)
             if normalized_alias and normalized_alias in normalized_unit:
@@ -314,11 +332,8 @@ def build_admission_score_rows(departments: list[dict[str, object]]) -> list[lis
                 (row[11] if len(row) > 11 else None, "최저 등급"),
             ]
             for value, score_type in score_candidates:
-                if value is None or str(value).strip() == "":
-                    continue
-                try:
-                    score_value = float(value)
-                except (TypeError, ValueError):
+                score_value = parse_score(value)
+                if score_value is None:
                     continue
                 rows.append(
                     [
@@ -338,8 +353,81 @@ def build_admission_score_rows(departments: list[dict[str, object]]) -> list[lis
                         "",
                     ]
                 )
+    rows.extend(build_comprehensive_admission_score_rows(departments))
     rows.sort(key=lambda item: (item[0], item[4], item[2], item[8]))
     return rows
+
+
+def build_comprehensive_admission_score_rows(departments: list[dict[str, object]]) -> list[list[object]]:
+    rows = []
+    wb = openpyxl.load_workbook(COMPREHENSIVE_SCORE_FILE, read_only=True, data_only=True)
+    ws = wb["Sheet1"]
+    score_columns = [
+        (12, "평균/50%컷 등급", "대학발표 합격 등급"),
+        (13, "70~90%컷 등급②", "대학발표 합격 등급"),
+        (14, "최저 등급", "대학발표 합격 등급"),
+        (16, "평균/50%컷 등급", "대학어디가 발표자료"),
+        (17, "70~90%컷 등급②", "대학어디가 발표자료"),
+        (18, "최저 등급", "대학어디가 발표자료"),
+    ]
+
+    for row in ws.iter_rows(min_row=4, values_only=True):
+        if not any(row):
+            continue
+        university = clean_text(row[5] if len(row) > 5 else "")
+        admission_type_group = clean_text(row[0] if len(row) > 0 else "")
+        admission_name = clean_text(row[6] if len(row) > 6 else "")
+        unit = clean_text(row[7] if len(row) > 7 else "")
+        if not university or not unit:
+            continue
+        department, confidence = match_admission_department(unit, departments)
+        if not department:
+            continue
+
+        admission_type = " ".join(part for part in [admission_type_group, admission_name] if part)
+        extra_note = []
+        region = clean_text(row[4] if len(row) > 4 else "")
+        university_type = clean_text(row[1] if len(row) > 1 else "")
+        theme = clean_text(row[2] if len(row) > 2 else "")
+        if region:
+            extra_note.append(f"지역={region}")
+        if university_type:
+            extra_note.append(f"대학구분={university_type}")
+        if theme:
+            extra_note.append(f"테마={theme}")
+
+        for column_index, score_type, source_section in score_columns:
+            value = row[column_index] if len(row) > column_index else None
+            score_value = parse_score(value)
+            if score_value is None:
+                continue
+            rows.append(
+                [
+                    university,
+                    2025,
+                    admission_type,
+                    unit,
+                    department["id"],
+                    department["name"],
+                    score_value,
+                    "내신등급",
+                    score_type,
+                    f"종합_교과_컷 {source_section}",
+                    COMPREHENSIVE_SCORE_FILE.name,
+                    confidence,
+                    "; ".join([f"원본={source_section}"] + extra_note),
+                    "2026-05-25",
+                ]
+            )
+
+    deduped = []
+    seen = set()
+    for row in rows:
+        key = tuple(row[:13])
+        if key not in seen:
+            seen.add(key)
+            deduped.append(row)
+    return deduped
 
 
 def replace_sheet_rows(path: pathlib.Path, sheet_name: str, rows: list[list[object]]) -> None:
@@ -400,6 +488,18 @@ def update_source_register() -> None:
             "",
             "admission score reference",
             "대학/전형/모집단위별 내신 등급 컷. clustering feature가 아닌 해석 변수로만 사용",
+        ],
+        [
+            "S006",
+            "internal_compiled",
+            "종합_교과_컷",
+            COMPREHENSIVE_SCORE_FILE.name,
+            "내부 정리 자료",
+            "manual_excel",
+            "2026-05-25",
+            "",
+            "admission score reference",
+            "전국 대학 교과/종합 전형의 대학발표 및 대학어디가 내신 컷. 기존 지거국 컷을 보강하는 해석 변수로 사용",
         ],
     ]:
         ws.append(row)
@@ -463,7 +563,10 @@ def update_collection_checklist(course_rows: list[list[object]], score_rows: lis
             ws.cell(row_index, 7).value = "필요"
             ws.cell(row_index, 8).value = "원본 컷 파일에서 자동 매칭 실패 또는 해당 모집단위 없음"
 
-    wb.save(path)
+    try:
+        wb.save(path)
+    except PermissionError:
+        print(f"warning: could not save {path}; close the workbook and rerun to update checklist")
 
 
 def main() -> None:

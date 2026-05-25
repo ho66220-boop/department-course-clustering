@@ -1,169 +1,140 @@
-# Department Course Clustering
+# Course-Based Clustering of Academic Departments for Admission Counseling Support
 
-NOVA50301 Term Project repository for analyzing department similarity from recommended high-school course selections and validating the result against real admission-consulting judgments.
+## 1. Project Overview
 
-이 프로젝트의 핵심 목표는 단순히 군집 결과를 만드는 것이 아니라, **진학 상담 현장에서 사용할 수 있는 유사 학과 추천 후보군 생성 방식**을 검토하는 것입니다.
+This repository contains an exploratory clustering project for the NOVA50301 AI Toolkit term project.
 
-## Practical Motivation
+The project explores whether recommended high-school course profiles can be used to cluster academic departments in an interpretable way for college admission counseling support. The goal is not to build a complete department recommendation system. Instead, the project focuses on constructing department-course vectors and examining whether the resulting clusters reflect meaningful course-preparation patterns across departments.
 
-In real admission counseling, a consultant often recommends multiple departments to one student. Official discipline categories such as humanities, social science, natural science, engineering, and medicine are useful, but they do not fully explain practical recommendation decisions.
+The main analytical object is a department-course matrix for 24 selected academic departments. Recommended high-school subjects are coded into weighted and binary vectors, then compared using cosine similarity and clustering methods.
 
-This project defines department similarity as:
+## 2. Research Question
 
-> the likelihood that two departments can be recommended together to the same student.
+The main research question is:
 
-The project combines three views of similarity:
+> Can recommended high-school course profiles produce interpretable clusters of academic departments for admission counseling support?
 
-1. **Course similarity**: Are the recommended high-school courses similar?
-2. **Expert consensus**: Do admission consultants group the departments together?
-3. **Admission score feasibility**: Are the departments realistically comparable in grade/cut range?
+The project also considers two supporting questions:
 
-## Research Questions
+1. How can recommended-course information be converted into department-course vectors?
+2. Does a refined course vector, excluding broad subject labels, produce more interpretable clusters than a baseline vector?
 
-1. How does a recommended-course vector represent similarity between departments?
-2. How well does course-based similarity align with admission consultants' co-recommendation consensus?
-3. When course similarity and expert consensus disagree, can admission score difference help explain the gap?
-4. Can the result be converted into a practical candidate-generation table for admission counseling?
+## 3. Why 24 Departments?
 
-## Expected Practical Output
+The project uses 24 selected departments.
 
-The final result should not stop at a dendrogram. The intended counseling-oriented output is a table like this:
+The 24 departments were selected as a purposive sample to maximize course-profile diversity and counseling relevance, while keeping the analysis interpretable within the scope of a short exploratory clustering study.
 
-| Input department | Candidate department | Course similarity | Expert consensus | Score difference | Interpretation |
-| --- | --- | ---: | ---: | ---: | --- |
-| Chemistry | Chemical Engineering | high | high | small | Similar preparation and practical co-recommendation |
-| Chemistry | Pharmacy | high | low | large | Course preparation overlaps, but grade feasibility may differ |
-| Mathematics | Applied Statistics | high | high | small | Strong practical candidate pair |
+This means the departments are not intended to be a statistically representative sample of all academic departments. They were selected to include departments with different preparation patterns, counseling relevance, and boundary cases such as humanities/social science, engineering, natural science, health/medical, design, and interdisciplinary fields.
 
-This is framed as an **early prototype for recommendation support**, not as a complete automated recommendation system.
+More detail is provided in `docs/department_selection_rationale.md`.
 
-## Repository Structure
+## 4. Data Structure
 
-```text
-department-course-clustering/
-├─ data/
-│  ├─ raw/          # Original private data: responses, admission cut data
-│  ├─ interim/      # Intermediate cleaned data
-│  ├─ processed/    # Analysis-ready de-identified data
-│  └─ external/     # Public source materials and source notes
-├─ docs/            # Design notes, raw data plan, practical-use plan
-├─ notebooks/       # Exploratory analysis notebooks
-├─ reports/
-│  ├─ progress/     # Progress report materials
-│  ├─ final/        # Final report materials
-│  └─ slides/       # Presentation slides
-├─ results/
-│  ├─ figures/      # Dendrograms, heatmaps, plots
-│  └─ tables/       # Pairwise consensus, recommendation candidate tables
-├─ src/             # Reproducible analysis code
-└─ templates/
-   └─ card_sorting/ # Consultant response and collection templates
-```
+The core data source is recommended high-school course information matched to the 24 departments.
 
-## Design Documents
+The main data objects are:
 
-- [Project design](docs/project_design.md): research positioning, variables, modeling decisions
-- [Raw data collection plan](docs/raw_data_plan.md): what to collect and what to exclude
-- [Practical use plan](docs/practical_use_plan.md): how the result can support admission counseling
+- `data/raw/departments_raw.xlsx`: selected department list
+- `data/raw/recommended_courses_raw.xlsx`: raw recommended-course evidence
+- `data/processed/course_coding_evidence.csv`: cleaned evidence for department-course coding
+- `data/processed/department_course_matrix_weighted.csv`: baseline weighted matrix
+- `data/processed/department_course_matrix_binary.csv`: baseline binary matrix
+- `data/processed/department_course_matrix_refined_weighted.csv`: refined weighted matrix
+- `data/processed/department_course_matrix_refined_binary.csv`: refined binary matrix
 
-## Data Collection Templates
-
-- [Department list template](templates/data_collection/departments_template.csv)
-- [Recommended courses template](templates/data_collection/recommended_courses_template.csv)
-- [Admission scores template](templates/data_collection/admission_scores_template.csv)
-- [Card sorting long-format template](templates/data_collection/card_sorting_long_template.csv)
-- [Raw source register template](templates/data_collection/raw_source_register_template.csv)
-
-CareerNet collection helper:
-
-```powershell
-$env:CAREERNET_API_KEY="YOUR_API_KEY"
-python src/collect_careernet_majors.py --out data/raw/careernet_major_raw.json
-```
-
-Fill-in Excel templates are also prepared under `data/raw/`:
-
-- `data/raw/departments_raw.xlsx`
-- `data/raw/recommended_courses_raw.xlsx`
-- `data/raw/admission_scores_raw.xlsx`
-- `data/raw/raw_source_register.xlsx`
-- `data/raw/collection_checklist.xlsx`
-- `data/raw/card_sorting_responses/`
-
-## Current Scope
-
-- Departments: 24
-- Department pairs: 276
-- Expert evaluators: 14 admission consultants
-- Main clustering feature: recommended-course vector
-- Admission score data: interpretation variable, not clustering feature
-- Practical target: candidate-generation support for counseling
-
-## Core Data
-
-### 1. Course Vector
-
-Recommended high-school courses are converted into a department x course matrix.
+The weighted matrix uses the following coding rule:
 
 | Value | Meaning |
-| --- | --- |
+| ---: | --- |
 | 1.0 | Core recommended course |
 | 0.5 | Related or supporting recommended course |
 | 0.0 | Not mentioned |
 
-The main analysis uses the weighted vector. A binary vector is used as a sensitivity check.
+The baseline vector includes all standardized course features. The refined vector removes broad common subject labels such as Korean, general mathematics, English, general social studies, and general science so that clustering is driven more by detailed course features.
 
-### 2. Expert Consensus
+The cleaned schema for a simplified department-course matrix is documented in `docs/department_course_matrix_schema.md`. In that schema, `department_id`, `department_name`, `broad_field`, and `selected_reason` are metadata columns and should not be used as clustering features.
 
-Consultants sort 24 departments into groups based on whether they would recommend those departments together to one student.
+## 5. Method
+
+The analysis follows these steps:
+
+1. Build a department-course matrix from recommended-course evidence.
+2. Construct baseline weighted and binary vectors.
+3. Construct refined weighted and binary vectors by excluding broad subject labels.
+4. Compute cosine similarity between department vectors.
+5. Apply hierarchical clustering as the main clustering method.
+6. Use k-means clustering as a comparison method.
+7. Compare baseline and refined results using cluster interpretability and internal metrics such as silhouette score and Davies-Bouldin index.
+
+The project treats clustering results as exploratory patterns, not as final department recommendations.
+
+## 6. Progress Meeting Scope
+
+The Progress Meeting focuses on the completed pre-final analysis:
+
+- construction of department-course matrices
+- baseline versus refined vector design
+- cosine similarity computation
+- hierarchical clustering results
+- k-means comparison
+- preliminary dendrogram and heatmap interpretation
+- initial discussion of limitations
+
+Main progress-stage outputs include:
+
+- `results/figures/dendrogram_average_refined_weighted.png`
+- `results/figures/course_similarity_heatmap_refined_weighted.png`
+- `results/tables/cluster_assignments_refined_pre_expert.csv`
+- `results/tables/top30_refined_course_similarity_pairs.csv`
+- `results/tables/kmeans_internal_metrics_pre_expert.csv`
+
+Some generated file names still contain `pre_expert` for historical reasons. In the simplified Progress Meeting scope, expert consensus analysis is treated as future work and is not part of the main clustering analysis.
+
+## 7. Expected Final Report Scope
+
+The final 5-page report will focus on the course-based clustering analysis.
+
+Expected report components:
+
+1. Motivation and research question
+2. Explanation of the 24-department purposive sample
+3. Department-course matrix construction
+4. Baseline and refined vector design
+5. Cosine similarity and clustering methods
+6. Preliminary clustering results
+7. Discussion of interpretability, limitations, and future extensions
+
+The final report will not claim that the project recommends departments automatically. The intended claim is that recommended-course profiles can provide an interpretable basis for exploratory department clustering.
+
+## 8. Future Extensions
+
+The following components are treated as future extensions, not as core Progress Meeting tasks:
+
+- expert consensus using consultant card sorting
+- comparison between course-based similarity and expert co-grouping
+- admission score feasibility analysis
+- disagreement case analysis
+- candidate-generation tables for counseling workflows
+- validation of the clustering output in real counseling settings
+
+These extensions may help evaluate practical usefulness later, but they are outside the simplified core scope of the current term project.
+
+## 9. Repository Structure
 
 ```text
-expert_consensus(i, j) =
-  number of consultants who grouped i and j together
-  / number of valid responses for both i and j
+department-course-clustering/
+|- data/
+|  |- raw/          # Raw department and recommended-course files
+|  |- processed/    # Analysis-ready matrices, similarities, and cluster outputs
+|  |- interim/      # Intermediate files if needed
+|  `- external/     # Source Excel files used for raw data construction
+|- docs/            # Project design, selection rationale, and matrix schema notes
+|- reports/
+|  `- progress/     # Progress Meeting materials
+|- results/
+|  |- figures/      # Dendrograms and heatmaps
+|  `- tables/       # Cluster assignments, metrics, and similarity tables
+|- src/             # Reproducible data processing and analysis code
+`- templates/       # Core data templates and optional future-extension templates
 ```
-
-### 3. Admission Score Difference
-
-Admission cut/grade data is collected for national flagship universities and local universities where available. It is used only to interpret disagreement cases.
-
-```text
-score_difference(i, j) = |representative_score_i - representative_score_j|
-```
-
-## Analysis Plan
-
-1. Build the recommended-course matrix.
-2. Compute cosine similarity after normalization.
-3. Run hierarchical clustering as the main clustering method.
-4. Run k-means as a baseline.
-5. Convert card sorting responses into pairwise expert consensus.
-6. Compare course similarity with expert consensus.
-7. Extract disagreement cases.
-8. Interpret disagreement using score difference and qualitative notes.
-9. Produce a counseling-oriented candidate table.
-
-## Card Sorting Files
-
-`templates/card_sorting/` contains:
-
-- `CardSorting_distribution_individual_response.xlsx`: individual response file for consultants
-- `CardSorting_master_improved.xlsx`: master file for collecting responses and computing expert consensus
-
-## Data Privacy
-
-Raw consultant responses, private admission score files, and internal company data should not be uploaded to a public GitHub repository. Public files should be limited to:
-
-- empty templates
-- de-identified processed data
-- reproducible analysis code
-- public figures/tables
-- reports and slides
-
-## Status
-
-- Card sorting templates prepared
-- 24-department evaluation design prepared
-- Course-vector feature set to be finalized
-- University/admission-score scope to be finalized
-- Practical recommendation-output format added to the project design

@@ -1,137 +1,98 @@
-# Raw Data Collection Plan
+# Raw Data Plan
 
 ## Collection Principle
 
-Raw data should be collected only to the extent needed for the project goal:
+Raw data should be collected only to the extent needed for the simplified project goal:
 
-> testing whether course-based clustering can support practical admission counseling.
+> building department-course vectors and testing whether recommended high-school course profiles produce interpretable department clusters.
 
-The project does not need nationwide exhaustive admission data. A controlled and explainable scope is better.
+The project does not require exhaustive nationwide department data, multi-year admission data, or student-level counseling records. A controlled and explainable scope is more appropriate for a 5-page exploratory clustering report.
 
-## Required Raw Data
+## Core Raw Data
 
 ### 1. Department List
 
-Fixed scope: 24 departments used in card sorting.
-
-Fill this file:
+Core file:
 
 ```text
 data/raw/departments_raw.xlsx
 ```
 
-Fields:
+The file defines the 24 selected departments used in the clustering analysis.
+
+Recommended fields:
 
 | Field | Description |
 | --- | --- |
-| department_id | Stable department ID |
-| department_name_ko | Korean department name |
-| broad_category | Traditional broad category, for reference only |
-| note | Boundary or counseling-context note |
+| `department_id` | Stable department ID |
+| `department_name_ko` | Korean department name |
+| `broad_category` | Broad academic field, used as metadata only |
+| `boundary_flag` | Whether the department is a boundary/interdisciplinary case |
+| `note` | Rationale or context for inclusion |
+
+The 24 departments are a purposive sample. They are not intended to statistically represent all university departments.
 
 ### 2. Recommended Courses
 
-This is the main raw data for course vectors.
-
-Fill this file:
+Core file:
 
 ```text
 data/raw/recommended_courses_raw.xlsx
 ```
 
-Sources:
+This is the main raw data source for constructing department-course vectors.
 
-- 대교협 권장 이수과목 자료
-- 커리어넷 학과정보
-- public high-school course-selection guidance where useful
-
-Fields:
+Recommended fields:
 
 | Field | Description |
 | --- | --- |
-| department_name | Standardized department name |
-| source | Source name |
-| source_url_or_file | URL or file reference |
-| course_name_original | Course name as written in source |
-| course_name_standardized | Standardized course feature name |
-| recommendation_level_original | Original wording |
-| assigned_weight | 1.0 / 0.5 / 0.0 |
-| coding_note | Why this weight was assigned |
+| `department_id` | Stable department ID |
+| `department_name_ko` | Department name |
+| `source_type` | Type of source |
+| `source_name` | Source title |
+| `source_url_or_file` | URL or file reference |
+| `course_name_original` | Course text as written in the source |
+| `course_name_standardized` | Standardized course feature |
+| `subject_group` | Broad subject group |
+| `recommendation_level_original` | Original recommendation wording |
+| `assigned_weight` | `1.0`, `0.5`, or `0.0` |
+| `coding_rule` | Rule used for assigning the weight |
+| `coding_note` | Matching or coding note |
+| `source_access_date` | Access or processing date |
 
-### 3. Card Sorting Responses
+## Processed Core Data
 
-Raw individual responses from 14 consultants.
+Core processed outputs should include:
 
-Save response files here:
+- department-course matrix
+- refined department-course matrix
+- cosine similarity matrix
+- clustering assignments
+- clustering metrics
 
-```text
-data/raw/card_sorting_responses/
-```
+Metadata columns such as department ID, department name, broad field, and selected reason should not be used as clustering features.
 
-Fields:
+## Future-Extension Data
 
-| Field | Description |
-| --- | --- |
-| respondent_id | T01-T14 in processed data |
-| department_name | Department name |
-| group_number | Group number assigned by respondent |
-| memo | Optional ambiguity note |
-| response_date | Date received |
+The following data may be useful later but is outside the simplified core scope:
 
-Personal names should be removed from processed/public data.
+- consultant card sorting responses
+- expert consensus scores
+- admission score or grade-cut data
+- candidate-generation tables
+- real counseling workflow data
 
-## Recommended Additional Raw Data
+These data sources should be treated as future work unless explicitly added to a later final-stage analysis.
 
-### 4. Admission Grade/Cut Data
+## Data Not Recommended For The Current Scope
 
-This data is needed for practical feasibility interpretation.
+Avoid adding these to the current Progress Meeting scope:
 
-Fill this file:
-
-```text
-data/raw/admission_scores_raw.xlsx
-```
-
-Recommended university scope:
-
-- 부산대
-- 경북대
-- 전남대
-- 충남대
-- 충북대
-- 전북대
-- 강원대
-- 경상국립대
-- 울산대
-
-Optional additions:
-
-- 부경대
-- 동아대
-
-Fields:
-
-| Field | Description |
-| --- | --- |
-| university | University name |
-| admission_year | Admission year |
-| admission_type | 교과 / 종합 / 지역인재 등 |
-| unit_name_original | Original recruitment unit name |
-| department_name_standardized | Matched one of the 24 departments |
-| score_value | Grade/cut/percentile value |
-| score_type | 평균 / 70% cut / 최종등록자 등 |
-| source | Source file or URL |
-| matching_note | Department-name matching note |
-
-## Data Not Recommended at This Stage
-
-Avoid collecting these in the first version:
-
-- all universities nationwide
-- all departments and recruitment units
-- 3-5 years of full admission data
+- all departments nationwide
+- all universities and recruitment units
+- multi-year full admission score histories
 - student-level counseling history
 - individual pass/fail records
 - consultant real-name comparison data
 
-These would increase privacy, cleaning, and scope risks without being necessary for the term project.
+These would increase cleaning, privacy, and interpretation risks without being necessary for the current exploratory clustering study.
