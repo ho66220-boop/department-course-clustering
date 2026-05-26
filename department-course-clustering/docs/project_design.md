@@ -16,8 +16,8 @@ It should not be described as a complete department recommendation system.
 
 The core scope is intentionally limited to the following:
 
-1. Use 24 selected academic departments.
-2. Treat the 24 departments as a purposive sample, not as a statistically representative sample.
+1. Use 25 selected academic departments.
+2. Treat the 25 departments as a purposive sample, not as a statistically representative sample.
 3. Build a department-course matrix from recommended high-school course evidence.
 4. Compare baseline and refined course vectors.
 5. Compute cosine similarity between department vectors.
@@ -25,12 +25,12 @@ The core scope is intentionally limited to the following:
 7. Use k-means clustering as a comparison method.
 8. Interpret preliminary clusters as exploratory patterns.
 
-The 24 departments were selected to maximize course-profile diversity, counseling relevance, interpretability, and feasibility within a 5-page term project.
+The 25 departments were selected to maximize course-profile diversity, counseling relevance, interpretability, and feasibility within a 5-page term project. Shipbuilding and Ocean Engineering and Automotive Engineering are included as Ulsan-related industry-specific engineering boundary cases, not as statistically representative examples of all industry-specific departments.
 
 ## Unit Of Analysis
 
-- Department-level analysis: 24 departments
-- Pairwise similarity analysis: 276 department pairs
+- Department-level analysis: 25 departments
+- Pairwise similarity analysis: 300 department pairs
 
 The pairwise table is used to inspect course-based similarity between departments. It should not be interpreted as a final recommendation list.
 
@@ -54,22 +54,21 @@ The refined vector removes broad subject-level labels such as Korean, general ma
 
 The refined vector keeps more specific course features, such as calculus, geometry, probability/statistics, physics, chemistry, biology, earth science, information, economics, and ethics.
 
-The weighted coding rule is:
+The main binary coding rule is:
 
 | Value | Meaning |
 | ---: | --- |
-| `1.0` | Core recommended course |
-| `0.5` | Related or supporting recommended course |
-| `0.0` | Not mentioned |
+| `1` | Listed as a related high-school elective subject in `학과 과목 선택 가이드.xlsx` |
+| `0` | Not listed |
 
-If the same department-course pair appears in multiple sources, the maximum coded value is used rather than summing repeated mentions.
+Repeated mentions are not summed. The matrix records whether a related elective subject is listed for the department in the guide.
 
 ## Progress Meeting Scope
 
 The Progress Meeting should focus on:
 
 - department-course matrix construction
-- baseline versus refined vector design
+- baseline versus refined binary vector design
 - cosine similarity
 - hierarchical clustering
 - k-means comparison

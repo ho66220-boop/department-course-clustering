@@ -1,3 +1,2 @@
-department_id,department_name_ko,source_type,source_name,source_url_or_file,course_name_original,course_name_standardized,subject_group,recommendation_level_original,assigned_weight,coding_rule,coding_note,source_access_date
-D01,건축학과,,,,,,,,,,,
-
+department_id,department_name_ko,source_type,source_name,source_url_or_file,course_name_original,course_name_standardized,subject_group,recommendation_level_original,binary_value,coding_rule,coding_note,source_access_date
+D01,건축학과,CareerNet,,,,,,,,1 if listed as CareerNet related elective; otherwise 0,,

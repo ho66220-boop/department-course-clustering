@@ -1,3 +1,11 @@
+"""Legacy broad analysis script.
+
+The current Progress-stage scope uses `src/build_progress_analysis.py` with
+25 departments and binary CareerNet course vectors. This older script is kept
+only for historical/future-extension reference because it includes weighted
+vectors and admission-score feasibility logic.
+"""
+
 from __future__ import annotations
 
 import itertools

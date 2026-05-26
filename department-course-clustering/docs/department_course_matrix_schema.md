@@ -1,6 +1,6 @@
 # Department-Course Matrix Schema
 
-This note defines the cleaned data structure for the simplified project scope. The goal is to build a department-course matrix for 24 academic departments and use the course-feature columns for cosine similarity, hierarchical clustering, and k-means clustering.
+This note defines the cleaned data structure for the simplified project scope. The goal is to build a department-course matrix for 25 academic departments and use the course-feature columns for cosine similarity, hierarchical clustering, and k-means clustering.
 
 The template file is a blank structural template. It is not a clustering-ready matrix until the course-feature values are populated from recommended-course evidence.
 
@@ -19,7 +19,7 @@ Required metadata columns:
 | `department_id` | Stable department identifier | No |
 | `department_name` | Department name | No |
 | `broad_field` | Broad academic field label | No |
-| `selected_reason` | Short rationale for inclusion in the 24-department purposive sample | No |
+| `selected_reason` | Short rationale for inclusion in the 25-department purposive sample | No |
 
 Recommended refined course-feature columns:
 
@@ -43,15 +43,14 @@ The refined matrix intentionally excludes broad common subject labels such as Ko
 
 ## Coding Rule
 
-Each department-course cell should use the following coding rule:
+Each department-course cell should use the following binary coding rule:
 
 | Value | Meaning |
 | ---: | --- |
-| `1.0` | Core recommended course |
-| `0.5` | Related or supporting recommended course |
-| `0.0` | Not mentioned |
+| `1` | Listed as a related high-school elective subject in `학과 과목 선택 가이드.xlsx` |
+| `0` | Not listed |
 
-If the same department-course pair appears in multiple sources, use the maximum coded value rather than summing repeated mentions. This prevents departments with more source rows from being over-weighted.
+If the same department-course pair appears multiple times, keep the value as `1`. Repeated mentions should not be summed, because the matrix represents whether a related elective subject is listed in the guide, not the intensity of recommendation.
 
 ## Clustering Input
 
@@ -68,15 +67,15 @@ The clustering input should include only numeric refined course-feature columns.
 
 A clustering-ready matrix should satisfy the following checks:
 
-- exactly 24 department rows
+- exactly 25 department rows
 - no duplicate `department_id`
 - no duplicate `department_name`
 - non-empty `broad_field`
 - non-empty or documented `selected_reason`
-- course-feature values limited to `0.0`, `0.5`, and `1.0`
+- course-feature values limited to `0` and `1`
 - no missing values in course-feature columns
-- no department row with all course-feature values equal to `0.0`
-- no course-feature column entirely equal to `0.0` unless intentionally retained and documented
+- no department row with all course-feature values equal to `0`
+- no course-feature column entirely equal to `0` unless intentionally retained and documented
 - no expert consensus, admission score, or candidate-generation columns
 
 The blank template may fail the all-zero row and all-zero column checks by design. Those checks must pass before the matrix is used for cosine similarity or clustering.

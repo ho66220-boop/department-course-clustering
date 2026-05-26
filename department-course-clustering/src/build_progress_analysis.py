@@ -13,7 +13,7 @@ from sklearn.preprocessing import normalize
 
 
 BASE = pathlib.Path(__file__).resolve().parents[1]
-INPUT_MATRIX = BASE / "data" / "processed" / "department_course_matrix_refined_weighted.csv"
+INPUT_MATRIX = BASE / "data" / "processed" / "department_course_matrix_refined_binary.csv"
 TABLES = BASE / "results" / "tables"
 FIGURES = BASE / "results" / "figures"
 
@@ -24,7 +24,8 @@ METADATA_COLUMNS = {
     "broad_field",
     "selected_reason",
 }
-VALID_COURSE_VALUES = {0.0, 0.5, 1.0}
+EXPECTED_DEPARTMENTS = 25
+VALID_COURSE_VALUES = {0.0, 1.0}
 N_CLUSTERS = 4
 
 
@@ -62,8 +63,8 @@ def get_course_columns(matrix: pd.DataFrame) -> list[str]:
 def validate_matrix(matrix: pd.DataFrame, course_columns: list[str]) -> None:
     errors: list[str] = []
 
-    if len(matrix) != 24:
-        errors.append(f"Expected 24 departments, found {len(matrix)}.")
+    if len(matrix) != EXPECTED_DEPARTMENTS:
+        errors.append(f"Expected {EXPECTED_DEPARTMENTS} departments, found {len(matrix)}.")
     if "department_id" not in matrix.columns:
         errors.append("Missing department_id column.")
     elif matrix["department_id"].duplicated().any():
@@ -77,7 +78,7 @@ def validate_matrix(matrix: pd.DataFrame, course_columns: list[str]) -> None:
     values = pd.unique(matrix[course_columns].to_numpy().ravel())
     invalid_values = sorted({float(value) for value in values if pd.notna(value) and float(value) not in VALID_COURSE_VALUES})
     if invalid_values:
-        errors.append(f"Invalid course values found: {invalid_values}. Allowed values are 0.0, 0.5, 1.0.")
+        errors.append(f"Invalid course values found: {invalid_values}. Allowed values are 0 and 1.")
 
     all_zero_rows = matrix.loc[(matrix[course_columns].fillna(0) == 0).all(axis=1), "department_id"].tolist()
     if all_zero_rows:
@@ -138,7 +139,10 @@ def hierarchical_cluster(matrix: pd.DataFrame, similarity: np.ndarray) -> tuple[
 
 def plot_dendrogram(linkage_matrix: np.ndarray, matrix: pd.DataFrame) -> None:
     name_column = get_name_column(matrix)
-    labels = [f"{row.department_id} {getattr(row, name_column)}" for row in matrix.itertuples()]
+    labels = [
+        f"{department_id} {department_name}"
+        for department_id, department_name in zip(matrix["department_id"], matrix[name_column])
+    ]
 
     plt.figure(figsize=(13, 7))
     dendrogram(linkage_matrix, labels=labels, leaf_rotation=75, leaf_font_size=9, color_threshold=None)
@@ -181,6 +185,7 @@ def main() -> None:
     setup_plot_style()
 
     # Progress-stage input: metadata columns are kept for labels only.
+    # Course values are binary subject-guide indicators: 1 = listed, 0 = not listed.
     # Only course columns enter cosine similarity and clustering.
     matrix = load_matrix(INPUT_MATRIX)
     course_columns = get_course_columns(matrix)

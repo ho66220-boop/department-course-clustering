@@ -6,7 +6,7 @@ This repository contains an exploratory clustering project for the NOVA50301 AI 
 
 The project explores whether recommended high-school course profiles can be used to cluster academic departments in an interpretable way for college admission counseling support. The goal is not to build a complete department recommendation system. Instead, the project focuses on constructing department-course vectors and examining whether the resulting clusters reflect meaningful course-preparation patterns across departments.
 
-The main analytical object is a department-course matrix for 24 selected academic departments. Recommended high-school subjects are coded into weighted and binary vectors, then compared using cosine similarity and clustering methods.
+The main analytical object is a department-course matrix for 25 selected academic departments. Recommended high-school elective subjects listed in `학과 과목 선택 가이드.xlsx` are coded into binary vectors, then compared using cosine similarity and clustering methods.
 
 ## 2. Research Question
 
@@ -19,37 +19,36 @@ The project also considers two supporting questions:
 1. How can recommended-course information be converted into department-course vectors?
 2. Does a refined course vector, excluding broad subject labels, produce more interpretable clusters than a baseline vector?
 
-## 3. Why 24 Departments?
+## 3. Why 25 Departments?
 
-The project uses 24 selected departments.
+The project uses 25 selected departments.
 
-The 24 departments were selected as a purposive sample to maximize course-profile diversity and counseling relevance, while keeping the analysis interpretable within the scope of a short exploratory clustering study.
+The 25 departments were selected as a purposive sample to maximize course-profile diversity and counseling relevance, while keeping the analysis interpretable within the scope of a short exploratory clustering study.
 
 This means the departments are not intended to be a statistically representative sample of all academic departments. They were selected to include departments with different preparation patterns, counseling relevance, and boundary cases such as humanities/social science, engineering, natural science, health/medical, design, and interdisciplinary fields.
+
+Shipbuilding and Ocean Engineering and Automotive Engineering are included as industry-specific engineering boundary cases related to the Ulsan regional industrial context. These two departments are not treated as statistically representative of all industry-specific departments; they are exploratory cases for examining how applied engineering fields are positioned in course-based clustering.
 
 More detail is provided in `docs/department_selection_rationale.md`.
 
 ## 4. Data Structure
 
-The core data source is recommended high-school course information matched to the 24 departments.
+The core data source is recommended high-school elective subject information matched to the 25 departments in `학과 과목 선택 가이드.xlsx`.
 
 The main data objects are:
 
 - `data/raw/departments_raw.xlsx`: selected department list
 - `data/raw/recommended_courses_raw.xlsx`: raw recommended-course evidence
 - `data/processed/course_coding_evidence.csv`: cleaned evidence for department-course coding
-- `data/processed/department_course_matrix_weighted.csv`: baseline weighted matrix
 - `data/processed/department_course_matrix_binary.csv`: baseline binary matrix
-- `data/processed/department_course_matrix_refined_weighted.csv`: refined weighted matrix
 - `data/processed/department_course_matrix_refined_binary.csv`: refined binary matrix
 
-The weighted matrix uses the following coding rule:
+The main matrix uses the following binary coding rule:
 
 | Value | Meaning |
 | ---: | --- |
-| 1.0 | Core recommended course |
-| 0.5 | Related or supporting recommended course |
-| 0.0 | Not mentioned |
+| 1 | Listed as a related high-school elective subject in the subject selection guide |
+| 0 | Not listed |
 
 The baseline vector includes all standardized course features. The refined vector removes broad common subject labels such as Korean, general mathematics, English, general social studies, and general science so that clustering is driven more by detailed course features.
 
@@ -60,8 +59,8 @@ The cleaned schema for a simplified department-course matrix is documented in `d
 The analysis follows these steps:
 
 1. Build a department-course matrix from recommended-course evidence.
-2. Construct baseline weighted and binary vectors.
-3. Construct refined weighted and binary vectors by excluding broad subject labels.
+2. Construct baseline binary vectors.
+3. Construct refined binary vectors by excluding broad subject labels.
 4. Compute cosine similarity between department vectors.
 5. Apply hierarchical clustering as the main clustering method.
 6. Use k-means clustering as a comparison method.
@@ -74,7 +73,7 @@ The project treats clustering results as exploratory patterns, not as final depa
 The Progress Meeting focuses on the completed pre-final analysis:
 
 - construction of department-course matrices
-- baseline versus refined vector design
+- baseline versus refined binary vector design
 - cosine similarity computation
 - hierarchical clustering results
 - k-means comparison
@@ -83,11 +82,11 @@ The Progress Meeting focuses on the completed pre-final analysis:
 
 Main progress-stage outputs include:
 
-- `results/figures/dendrogram_average_refined_weighted.png`
-- `results/figures/course_similarity_heatmap_refined_weighted.png`
-- `results/tables/cluster_assignments_refined_pre_expert.csv`
-- `results/tables/top30_refined_course_similarity_pairs.csv`
-- `results/tables/kmeans_internal_metrics_pre_expert.csv`
+- `results/figures/course_similarity_heatmap.png`
+- `results/figures/hierarchical_dendrogram.png`
+- `results/tables/course_similarity_matrix.csv`
+- `results/tables/hierarchical_cluster_assignments.csv`
+- `results/tables/cluster_summary.csv`
 
 Some generated file names still contain `pre_expert` for historical reasons. In the simplified Progress Meeting scope, expert consensus analysis is treated as future work and is not part of the main clustering analysis.
 
@@ -98,7 +97,7 @@ The final 5-page report will focus on the course-based clustering analysis.
 Expected report components:
 
 1. Motivation and research question
-2. Explanation of the 24-department purposive sample
+2. Explanation of the 25-department purposive sample
 3. Department-course matrix construction
 4. Baseline and refined vector design
 5. Cosine similarity and clustering methods

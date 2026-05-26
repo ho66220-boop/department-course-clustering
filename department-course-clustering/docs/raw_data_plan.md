@@ -18,7 +18,7 @@ Core file:
 data/raw/departments_raw.xlsx
 ```
 
-The file defines the 24 selected departments used in the clustering analysis.
+The file defines the 25 selected departments used in the clustering analysis.
 
 Recommended fields:
 
@@ -30,7 +30,7 @@ Recommended fields:
 | `boundary_flag` | Whether the department is a boundary/interdisciplinary case |
 | `note` | Rationale or context for inclusion |
 
-The 24 departments are a purposive sample. They are not intended to statistically represent all university departments.
+The 25 departments are a purposive sample. They are not intended to statistically represent all university departments. Shipbuilding and Ocean Engineering and Automotive Engineering are included as Ulsan-related industry-specific engineering boundary cases for exploratory analysis.
 
 ### 2. Recommended Courses
 
@@ -55,8 +55,8 @@ Recommended fields:
 | `course_name_standardized` | Standardized course feature |
 | `subject_group` | Broad subject group |
 | `recommendation_level_original` | Original recommendation wording |
-| `assigned_weight` | `1.0`, `0.5`, or `0.0` |
-| `coding_rule` | Rule used for assigning the weight |
+| `binary_value` | `1` if listed as a related high-school elective subject in `학과 과목 선택 가이드.xlsx`, otherwise `0` |
+| `coding_rule` | Rule used for assigning the binary value |
 | `coding_note` | Matching or coding note |
 | `source_access_date` | Access or processing date |
 

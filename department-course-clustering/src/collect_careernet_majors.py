@@ -1,4 +1,4 @@
-"""Collect CareerNet major information for the 24 project departments.
+"""Collect CareerNet major information for the 25 project departments.
 
 This script uses the CareerNet Major OpenAPI. Set CAREERNET_API_KEY before
 running. The output should be treated as raw data and saved under data/raw/.
@@ -44,6 +44,7 @@ DEPARTMENTS = [
     "사학과",
     "응용통계학과",
     "컴퓨터공학과",
+    "자동차공학과",
 ]
 
 BASE_URL = "https://www.career.go.kr/cnet/openapi/getOpenApi"
@@ -123,4 +124,3 @@ def main() -> None:
 
 if __name__ == "__main__":
     main()
-

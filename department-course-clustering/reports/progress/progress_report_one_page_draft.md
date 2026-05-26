@@ -1,26 +1,23 @@
 # 권장과목 기반 학과 군집화: 입시 상담 지원을 위한 탐색적 분석
 
-## 1. 프로젝트 목표
+**Progress Update · NOVA50301 AI Toolkit**
 
-이 프로젝트의 목표는 고등학교 권장과목 정보가 대학 학과들을 해석 가능한 방식으로 군집화하는 데 활용될 수 있는지 탐색하는 것이다. 본 프로젝트는 완성된 학과 추천 시스템을 만드는 것이 아니라, 권장과목 profile을 바탕으로 학과 간 준비과목 유사성을 분석하는 탐색적 군집화 연구이다.
+## 핵심 질문과 범위
 
-## 2. 24개 학과 선정 이유
+본 프로젝트의 핵심 질문은 “고등학교 권장과목 profile이 학과들을 해석 가능한 방식으로 군집화할 수 있는가?”이다. 이 연구는 완성된 학과 추천 시스템을 만드는 것이 아니라, 학과별 선택과목 profile을 벡터화하여 학과 간 준비과목 유사성을 탐색하는 Progress-stage clustering project이다.
 
-분석 대상은 24개 학과이다. 이 24개 학과는 전체 대학 학과를 통계적으로 대표하기 위한 표본이 아니라, 탐색적 군집 분석을 위한 목적 표본이다. 학과들은 권장과목 profile의 다양성, 입시 상담에서의 관련성, 짧은 연구 안에서의 해석 가능성을 고려하여 선정하였다.
+## 데이터와 표본
 
-## 3. 데이터와 전처리
+분석 대상은 25개 학과이다. 이 25개 학과는 전체 학과를 통계적으로 대표하기 위한 표본이 아니라, course-profile diversity, counseling relevance, interpretability를 고려하여 선정한 purposive sample이다. 특히 조선해양공학과와 자동차공학과는 울산 지역 산업 맥락을 반영한 industry-specific engineering boundary case로 포함하였다. 원자료는 `학과 과목 선택 가이드.xlsx`이며, A열은 학과명, B-D열은 각각 일반선택, 진로선택, 융합선택 과목으로 구성되어 있다. 각 학과-과목 값은 가이드에 제시되면 `1`, 제시되지 않으면 `0`으로 코딩하였다.
 
-핵심 데이터는 학과-과목 행렬이다. 각 행은 하나의 학과를, 각 열은 표준화된 권장과목 feature를 의미한다. 과목 값은 핵심 권장과목이면 `1.0`, 관련 또는 보조 권장과목이면 `0.5`, 언급되지 않은 과목이면 `0.0`으로 코딩하였다. `department_id`, `department_name`과 같은 metadata는 군집화 feature로 사용하지 않았다.
+## 분석 절차
 
-## 4. 분석 방법
+분석 pipeline은 다음과 같다. 첫째, 25개 학과의 선택과목 정보를 long-form evidence로 변환하였다. 둘째, 이를 25 × 92 binary department-course matrix로 구성하였다. 셋째, metadata columns인 `department_id`, `department_name`, `broad_field`, `selected_reason`은 제외하고 course columns만 clustering feature로 사용하였다. 넷째, cosine similarity를 계산하고 average-linkage hierarchical clustering을 적용하였다.
 
-학과별 권장과목 vector 사이의 유사도를 계산하기 위해 cosine similarity를 사용하였다. 첫 번째 군집화 방법으로는 hierarchical clustering을 적용하였다. 현재 Progress 단계에서는 cosine similarity matrix, heatmap, dendrogram, cluster assignment, preliminary cluster summary를 생성하였다.
+## 예비 결과
 
-## 5. 예비 분석 결과
+현재 결과에서는 공학, 자연과학, 의약/보건, 정량 계열 학과들이 큰 quantitative/STEM-health cluster로 묶였고, 사회과학 중심 학과들은 별도 군집을 형성하였다. 국어국문학과와 디자인학과는 각각 singleton cluster로 나타났다. 상위 유사도 pair에서는 화학과-화학공학과, 경영학과-경제학과가 매우 높게 나타났으며, 자동차공학과는 기계공학과 및 전기전자공학과와 높은 유사도를 보였다. 이는 산업 특화 공학 boundary case가 권장과목 profile상 어디에 위치하는지 논의할 수 있는 예비 근거를 제공한다.
 
-예비 결과에서는 인문/사회 계열 학과들이 비교적 해석 가능한 군집을 형성하였다. 디자인학과는 독립적인 singleton cluster로 나타났고, 자연/공학/의약/보건/수리 계열 학과들은 하나의 큰 quantitative/STEM-health cluster로 묶였다. 이 큰 군집은 여러 학과가 미적분, 확률과 통계, 과학 관련 세부 과목을 공유한다는 점을 보여준다. 경제학과와 응용통계학과 같은 경계 학과는 전통적인 계열 분류가 아니라 권장과목 기반 준비 profile의 유사성으로 조심스럽게 해석해야 한다.
+## 다음 단계와 한계
 
-## 6. 다음 단계
-
-최종 보고서에서는 k-means clustering과 내부 평가 지표를 추가하여 방법 비교를 진행할 예정이다. 또한 24개 학과가 목적 표본이라는 점, 권장과목 자료의 출처 의존성, 큰 군집과 singleton cluster의 해석 한계 등을 논의할 것이다. 전문가 합의, 입결 기반 feasibility, 후보 학과 생성표는 현재 Progress 단계의 핵심 분석이 아니라 future work로 남겨둔다.
-
+이 결과는 exploratory pattern으로 해석해야 하며, 학과 추천의 최종 판단으로 사용하지 않는다. 다음 단계에서는 k-means clustering과 cluster-number sensitivity를 추가하여 방법 간 안정성을 확인하고, 큰 군집과 singleton cluster의 해석 한계를 정리할 예정이다. Expert consensus, admission score feasibility, candidate generation은 Progress-stage 핵심 분석이 아니라 future work로 남겨둔다.

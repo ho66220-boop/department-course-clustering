@@ -1,3 +1,10 @@
+"""Legacy external-source filler.
+
+The current Progress-stage scope should use CareerNet binary course evidence
+for 25 departments. This older script is retained only as historical context
+for external Excel sources and weighted coding experiments.
+"""
+
 from __future__ import annotations
 
 import pathlib
