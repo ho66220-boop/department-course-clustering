@@ -15,6 +15,7 @@ from sklearn.preprocessing import normalize
 BASE = pathlib.Path(__file__).resolve().parents[1]
 INPUT_MATRIX = BASE / "data" / "processed" / "department_course_matrix_refined_binary.csv"
 TABLES = BASE / "results" / "tables"
+REPORT_TABLES = TABLES / "keep_for_report"
 FIGURES = BASE / "results" / "figures"
 REPORT_FIGURES = FIGURES / "keep_for_report"
 
@@ -31,7 +32,7 @@ N_CLUSTERS = 4
 
 
 def ensure_dirs() -> None:
-    TABLES.mkdir(parents=True, exist_ok=True)
+    REPORT_TABLES.mkdir(parents=True, exist_ok=True)
     REPORT_FIGURES.mkdir(parents=True, exist_ok=True)
 
 
@@ -193,15 +194,15 @@ def main() -> None:
     validate_matrix(matrix, course_columns)
 
     similarity_df, similarity = compute_similarity(matrix, course_columns)
-    similarity_df.to_csv(TABLES / "course_similarity_matrix.csv", encoding="utf-8-sig")
+    similarity_df.to_csv(REPORT_TABLES / "course_similarity_matrix.csv", encoding="utf-8-sig")
     plot_heatmap(similarity, matrix)
 
     assignments, linkage_matrix = hierarchical_cluster(matrix, similarity)
-    assignments.to_csv(TABLES / "hierarchical_cluster_assignments.csv", index=False, encoding="utf-8-sig")
+    assignments.to_csv(REPORT_TABLES / "hierarchical_cluster_assignments.csv", index=False, encoding="utf-8-sig")
     plot_dendrogram(linkage_matrix, matrix)
 
     cluster_summary = summarize_clusters(matrix, assignments, course_columns)
-    cluster_summary.to_csv(TABLES / "cluster_summary.csv", index=False, encoding="utf-8-sig")
+    cluster_summary.to_csv(REPORT_TABLES / "cluster_summary.csv", index=False, encoding="utf-8-sig")
 
     print(f"input={INPUT_MATRIX}")
     print(f"departments={len(matrix)}")

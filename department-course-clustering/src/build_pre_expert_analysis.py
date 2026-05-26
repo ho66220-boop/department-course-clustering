@@ -30,6 +30,8 @@ from sklearn.preprocessing import normalize
 BASE = Path(__file__).resolve().parents[1]
 PROCESSED = BASE / "data" / "processed"
 TABLES = BASE / "results" / "tables"
+REPORT_TABLES = TABLES / "keep_for_report"
+DELETION_CANDIDATE_TABLES = TABLES / "deletion_candidates"
 FIGURES = BASE / "results" / "figures"
 REPORT_FIGURES = FIGURES / "keep_for_report"
 DELETION_CANDIDATE_FIGURES = FIGURES / "deletion_candidates"
@@ -42,7 +44,7 @@ RANDOM_STATE = 42
 
 
 def ensure_dirs() -> None:
-    for directory in [PROCESSED, TABLES, REPORT_FIGURES, DELETION_CANDIDATE_FIGURES]:
+    for directory in [PROCESSED, REPORT_TABLES, DELETION_CANDIDATE_TABLES, REPORT_FIGURES, DELETION_CANDIDATE_FIGURES]:
         directory.mkdir(parents=True, exist_ok=True)
 
 
@@ -238,7 +240,7 @@ def main() -> None:
     assignments = assignments.merge(binary_avg.drop(columns=["department_name_ko"]), on="department_id")
     assignments = assignments.merge(kmeans_assignments(weighted, "weighted").drop(columns=["department_name_ko"]), on="department_id")
     assignments = assignments.merge(kmeans_assignments(binary, "binary").drop(columns=["department_name_ko"]), on="department_id")
-    save_csv(assignments, PROCESSED / "cluster_assignments_pre_expert.csv", TABLES / "cluster_assignments_pre_expert.csv")
+    save_csv(assignments, PROCESSED / "cluster_assignments_pre_expert.csv", REPORT_TABLES / "cluster_assignments_pre_expert.csv")
 
     refined_assignments = refined_weighted_avg.merge(refined_weighted_complete.drop(columns=["department_name_ko"]), on="department_id")
     refined_assignments = refined_assignments.merge(refined_binary_avg.drop(columns=["department_name_ko"]), on="department_id")
@@ -251,7 +253,7 @@ def main() -> None:
     save_csv(
         refined_assignments,
         PROCESSED / "cluster_assignments_refined_pre_expert.csv",
-        TABLES / "cluster_assignments_refined_pre_expert.csv",
+        REPORT_TABLES / "cluster_assignments_refined_pre_expert.csv",
     )
 
     metrics = pd.concat(
@@ -263,20 +265,24 @@ def main() -> None:
         ],
         ignore_index=True,
     )
-    save_csv(metrics, TABLES / "kmeans_internal_metrics_pre_expert.csv")
+    save_csv(metrics, REPORT_TABLES / "kmeans_internal_metrics_pre_expert.csv")
 
     scores = score_summary(matrix)
-    save_csv(scores, PROCESSED / "admission_score_summary.csv", TABLES / "admission_score_summary.csv")
+    save_csv(scores, PROCESSED / "admission_score_summary.csv", DELETION_CANDIDATE_TABLES / "admission_score_summary.csv")
 
     pair_table = attach_scores(weighted_pairs, binary_pairs, scores, "course_similarity_weighted")
-    save_csv(pair_table, PROCESSED / "department_pair_pre_expert.csv", TABLES / "department_pair_pre_expert.csv")
-    save_csv(pair_table.head(30), TABLES / "top30_course_similarity_pairs.csv")
-    save_csv(pair_table.tail(30), TABLES / "bottom30_course_similarity_pairs.csv")
+    save_csv(pair_table, PROCESSED / "department_pair_pre_expert.csv", DELETION_CANDIDATE_TABLES / "department_pair_pre_expert.csv")
+    save_csv(pair_table.head(30), REPORT_TABLES / "top30_course_similarity_pairs.csv")
+    save_csv(pair_table.tail(30), DELETION_CANDIDATE_TABLES / "bottom30_course_similarity_pairs.csv")
 
     refined_pair_table = attach_scores(refined_weighted_pairs, refined_binary_pairs, scores, "course_similarity_refined_weighted")
-    save_csv(refined_pair_table, PROCESSED / "department_pair_refined_pre_expert.csv", TABLES / "department_pair_refined_pre_expert.csv")
-    save_csv(refined_pair_table.head(30), TABLES / "top30_refined_course_similarity_pairs.csv")
-    save_csv(refined_pair_table.tail(30), TABLES / "bottom30_refined_course_similarity_pairs.csv")
+    save_csv(
+        refined_pair_table,
+        PROCESSED / "department_pair_refined_pre_expert.csv",
+        DELETION_CANDIDATE_TABLES / "department_pair_refined_pre_expert.csv",
+    )
+    save_csv(refined_pair_table.head(30), REPORT_TABLES / "top30_refined_course_similarity_pairs.csv")
+    save_csv(refined_pair_table.tail(30), DELETION_CANDIDATE_TABLES / "bottom30_refined_course_similarity_pairs.csv")
 
     plot_dendrogram(weighted_avg_z, weighted, "average", "weighted")
     plot_dendrogram(weighted_complete_z, weighted, "complete", "weighted")
