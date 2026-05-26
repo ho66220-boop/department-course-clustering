@@ -1,4 +1,4 @@
-﻿department_id_1,department_name_1,department_id_2,department_name_2,course_similarity_weighted,course_similarity_binary,score_median_1,score_median_2,score_difference_median
+﻿department_id_1,department_name_1,department_id_2,department_name_2,course_similarity_refined_weighted,course_similarity_refined_binary,score_median_1,score_median_2,score_difference_median
 D05,화학과,D17,화학공학과,1.0,1.0,,,
 D11,경영학과,D14,경제학과,0.9999999999999999,0.9999999999999999,,,
 D04,기계공학과,D25,자동차공학과,0.9511897312113419,0.9511897312113419,,,

@@ -1,4 +1,4 @@
-﻿department_id_1,department_name_1,department_id_2,department_name_2,course_similarity_weighted,course_similarity_binary,score_median_1,score_median_2,score_difference_median
+﻿department_id_1,department_name_1,department_id_2,department_name_2,course_similarity_refined_weighted,course_similarity_refined_binary,score_median_1,score_median_2,score_difference_median
 D01,건축학과,D16,미디어커뮤니케이션학과,0.060522753266880246,0.060522753266880246,,,
 D04,기계공학과,D13,사회학과,0.05923488777590926,0.05923488777590926,,,
 D13,사회학과,D21,전기전자공학과,0.05923488777590926,0.05923488777590926,,,
