@@ -16,6 +16,7 @@ BASE = pathlib.Path(__file__).resolve().parents[1]
 INPUT_MATRIX = BASE / "data" / "processed" / "department_course_matrix_refined_binary.csv"
 TABLES = BASE / "results" / "tables"
 FIGURES = BASE / "results" / "figures"
+REPORT_FIGURES = FIGURES / "keep_for_report"
 
 METADATA_COLUMNS = {
     "department_id",
@@ -31,7 +32,7 @@ N_CLUSTERS = 4
 
 def ensure_dirs() -> None:
     TABLES.mkdir(parents=True, exist_ok=True)
-    FIGURES.mkdir(parents=True, exist_ok=True)
+    REPORT_FIGURES.mkdir(parents=True, exist_ok=True)
 
 
 def setup_plot_style() -> None:
@@ -116,7 +117,7 @@ def plot_heatmap(similarity: np.ndarray, matrix: pd.DataFrame) -> None:
     plt.yticks(range(len(labels)), labels, fontsize=8)
     plt.title("Course-profile cosine similarity")
     plt.tight_layout()
-    plt.savefig(FIGURES / "course_similarity_heatmap.png", dpi=200)
+    plt.savefig(REPORT_FIGURES / "course_similarity_heatmap.png", dpi=200)
     plt.close()
 
 
@@ -149,7 +150,7 @@ def plot_dendrogram(linkage_matrix: np.ndarray, matrix: pd.DataFrame) -> None:
     plt.title("Hierarchical clustering dendrogram")
     plt.ylabel("Cosine distance")
     plt.tight_layout()
-    plt.savefig(FIGURES / "hierarchical_dendrogram.png", dpi=200)
+    plt.savefig(REPORT_FIGURES / "hierarchical_dendrogram.png", dpi=200)
     plt.close()
 
 

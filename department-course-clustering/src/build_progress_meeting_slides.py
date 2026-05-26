@@ -12,8 +12,9 @@ from pptx.util import Inches, Pt
 
 BASE = Path(__file__).resolve().parents[1]
 OUTPUT = BASE / "reports" / "slides" / "progress_meeting_course_clustering.pptx"
-DENDROGRAM = BASE / "results" / "figures" / "hierarchical_dendrogram.png"
-HEATMAP = BASE / "results" / "figures" / "course_similarity_heatmap.png"
+REPORT_FIGURES = BASE / "results" / "figures" / "keep_for_report"
+DENDROGRAM = REPORT_FIGURES / "hierarchical_dendrogram.png"
+HEATMAP = REPORT_FIGURES / "course_similarity_heatmap.png"
 ASSIGNMENTS = BASE / "results" / "tables" / "hierarchical_cluster_assignments.csv"
 SUMMARY = BASE / "results" / "tables" / "cluster_summary.csv"
 SIMILARITY = BASE / "results" / "tables" / "course_similarity_matrix.csv"

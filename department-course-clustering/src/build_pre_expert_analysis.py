@@ -31,6 +31,8 @@ BASE = Path(__file__).resolve().parents[1]
 PROCESSED = BASE / "data" / "processed"
 TABLES = BASE / "results" / "tables"
 FIGURES = BASE / "results" / "figures"
+REPORT_FIGURES = FIGURES / "keep_for_report"
+DELETION_CANDIDATE_FIGURES = FIGURES / "deletion_candidates"
 INPUT_MATRIX = PROCESSED / "department_course_matrix_refined_binary.csv"
 
 METADATA_COLUMNS = {"department_id", "department_name", "department_name_ko", "broad_field", "selected_reason"}
@@ -40,7 +42,7 @@ RANDOM_STATE = 42
 
 
 def ensure_dirs() -> None:
-    for directory in [PROCESSED, TABLES, FIGURES]:
+    for directory in [PROCESSED, TABLES, REPORT_FIGURES, DELETION_CANDIDATE_FIGURES]:
         directory.mkdir(parents=True, exist_ok=True)
 
 
@@ -148,7 +150,8 @@ def plot_dendrogram(linkage_matrix: np.ndarray, view: pd.DataFrame, method: str,
     plt.title(f"Hierarchical clustering dendrogram ({method}, {suffix})")
     plt.ylabel("Cosine distance")
     plt.tight_layout()
-    plt.savefig(FIGURES / f"dendrogram_{method}_{suffix}.png", dpi=200)
+    output_dir = REPORT_FIGURES if "binary" in suffix else DELETION_CANDIDATE_FIGURES
+    plt.savefig(output_dir / f"dendrogram_{method}_{suffix}.png", dpi=200)
     plt.close()
 
 
@@ -161,7 +164,8 @@ def plot_heatmap(similarity: np.ndarray, view: pd.DataFrame, suffix: str) -> Non
     plt.yticks(range(len(labels)), labels, fontsize=8)
     plt.title(f"Course similarity heatmap ({suffix})")
     plt.tight_layout()
-    plt.savefig(FIGURES / f"course_similarity_heatmap_{suffix}.png", dpi=200)
+    output_dir = REPORT_FIGURES if "binary" in suffix else DELETION_CANDIDATE_FIGURES
+    plt.savefig(output_dir / f"course_similarity_heatmap_{suffix}.png", dpi=200)
     plt.close()
 
 

@@ -38,6 +38,10 @@ results/figures/*
 results/tables/*
 !results/figures/.gitkeep
 !results/tables/.gitkeep
+!results/figures/keep_for_report/
+!results/figures/keep_for_report/*.png
+!results/figures/deletion_candidates/
+!results/figures/deletion_candidates/*.png
 
 # Local report builds
 *.aux
