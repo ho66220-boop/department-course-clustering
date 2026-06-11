@@ -82,13 +82,15 @@ The Progress Meeting focuses on the completed pre-final analysis:
 
 Main progress-stage outputs include:
 
-- `results/figures/course_similarity_heatmap.png`
-- `results/figures/hierarchical_dendrogram.png`
-- `results/tables/course_similarity_matrix.csv`
-- `results/tables/hierarchical_cluster_assignments.csv`
-- `results/tables/cluster_summary.csv`
+- `results/figures/keep_for_report/course_similarity_heatmap.png`
+- `results/figures/keep_for_report/hierarchical_dendrogram.png`
+- `results/tables/keep_for_report/course_similarity_matrix.csv`
+- `results/tables/keep_for_report/hierarchical_cluster_assignments.csv`
+- `results/tables/keep_for_report/cluster_summary.csv`
 
-Some generated file names still contain `pre_expert` for historical reasons. In the simplified Progress Meeting scope, expert consensus analysis is treated as future work and is not part of the main clustering analysis.
+Report-relevant outputs are kept under `keep_for_report/`; alternative weighted-vector variants are kept under `deletion_candidates/` and are not used as main evidence.
+
+Some generated file names still contain `pre_expert` for historical reasons. Expert card-sorting validation is conducted separately from the Progress Meeting core clustering analysis (see Section 8) and is not required for the Progress Meeting milestone.
 
 ## 7. Expected Final Report Scope
 
@@ -102,22 +104,23 @@ Expected report components:
 4. Baseline and refined vector design
 5. Cosine similarity and clustering methods
 6. Preliminary clustering results
-7. Discussion of interpretability, limitations, and future extensions
+7. Expert card-sorting validation (consensus co-grouping versus clustering, ARI/NMI)
+8. Discussion of interpretability, limitations, and future extensions
 
 The final report will not claim that the project recommends departments automatically. The intended claim is that recommended-course profiles can provide an interpretable basis for exploratory department clustering.
 
-## 8. Future Extensions
+## 8. Expert Validation and Future Extensions
 
-The following components are treated as future extensions, not as core Progress Meeting tasks:
+Expert card-sorting validation is an active component of the project, separate from the Progress Meeting core clustering analysis. Practicing high-school admission counselors independently group the 25 departments by recommended-course similarity in an open card sort, with no constraint on the number of groups. Responses are aggregated into a 25-by-25 co-occurrence matrix to derive a consensus clustering, which is then compared with the hierarchical and k-means results using Adjusted Rand Index (ARI), Normalized Mutual Information (NMI), and pairwise agreement. The instrument is finalized in `templates/card_sorting/`; response collection is scheduled for W14, and the agreement results are reported in the Final Report.
 
-- expert consensus using consultant card sorting
-- comparison between course-based similarity and expert co-grouping
+The following components remain genuine future extensions, outside the core scope of the current term project:
+
 - admission score feasibility analysis
-- disagreement case analysis
+- disagreement case analysis between course-based similarity and expert co-grouping
 - candidate-generation tables for counseling workflows
 - validation of the clustering output in real counseling settings
 
-These extensions may help evaluate practical usefulness later, but they are outside the simplified core scope of the current term project.
+These extensions may help evaluate practical usefulness later, but they are not part of the current term project.
 
 ## 9. Repository Structure
 
