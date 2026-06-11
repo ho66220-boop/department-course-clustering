@@ -2,15 +2,15 @@
 
 This file is kept as historical context only. It was produced before the project was refocused to the current 25-department subject-guide binary-vector scope.
 
-For the current Progress Meeting, use:
+For the current Progress Meeting, use the IDF-weighted analysis:
 
 - `reports/progress/progress_report_one_page_draft.md`
-- `src/build_progress_analysis.py`
-- `results/figures/course_similarity_heatmap.png`
-- `results/figures/hierarchical_dendrogram.png`
-- `results/tables/course_similarity_matrix.csv`
-- `results/tables/hierarchical_cluster_assignments.csv`
-- `results/tables/cluster_summary.csv`
+- `src/build_idf_weighted_analysis.py` (main); `src/build_progress_analysis.py` (baseline binary, for comparison)
+- `results/figures/keep_for_report/idf_dendrogram.png`
+- `results/tables/keep_for_report/idf_cluster_assignments.csv`
+- `results/tables/keep_for_report/idf_cluster_summary.csv`
+- `results/tables/keep_for_report/weighting_sensitivity.csv`
+- `results/tables/keep_for_report/cluster_robustness.csv`
 
 Current framing:
 

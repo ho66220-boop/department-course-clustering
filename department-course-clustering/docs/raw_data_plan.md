@@ -64,8 +64,8 @@ Recommended fields:
 
 Core processed outputs should include:
 
-- department-course matrix
-- refined department-course matrix
+- department-course matrix (binary)
+- IDF-weighted department-course matrix
 - cosine similarity matrix
 - clustering assignments
 - clustering metrics

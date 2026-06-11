@@ -17,7 +17,7 @@ The main research question is:
 The project also considers two supporting questions:
 
 1. How can recommended-course information be converted into department-course vectors?
-2. Does a refined course vector, excluding broad subject labels, produce more interpretable clusters than a baseline vector?
+2. Does down-weighting courses common to many departments (inverse document frequency) produce more interpretable and field-consistent clusters than an unweighted baseline vector?
 
 ## 3. Why 25 Departments?
 
@@ -41,7 +41,8 @@ The main data objects are:
 - `data/raw/recommended_courses_raw.xlsx`: raw recommended-course evidence
 - `data/processed/course_coding_evidence.csv`: cleaned evidence for department-course coding
 - `data/processed/department_course_matrix_binary.csv`: baseline binary matrix
-- `data/processed/department_course_matrix_refined_binary.csv`: refined binary matrix
+- `data/processed/department_course_matrix_idf_weighted.csv`: IDF-weighted matrix (main analysis input)
+- `results/tables/keep_for_report/course_idf_weights.csv`: per-course document frequency and IDF weight
 
 The main matrix uses the following binary coding rule:
 
@@ -50,7 +51,7 @@ The main matrix uses the following binary coding rule:
 | 1 | Listed as a related high-school elective subject in the subject selection guide |
 | 0 | Not listed |
 
-The baseline vector includes all standardized course features. The refined vector removes broad common subject labels such as Korean, general mathematics, English, general social studies, and general science so that clustering is driven more by detailed course features.
+The baseline vector uses the raw binary presence of each course, so a near-ubiquitous course such as 확률과 통계 (listed by 21 of 25 departments) is as influential as a highly department-specific one. Because the guide lists specific elective subjects rather than broad subject labels, simply deleting broad labels is not applicable here. The main analysis instead re-weights each course by inverse document frequency (IDF), `weight = ln(N / df)`, which down-weights widely shared courses with no hand-tuned parameter. The chosen weighting is supported by a sensitivity sweep in `results/tables/keep_for_report/weighting_sensitivity.csv`.
 
 The cleaned schema for a simplified department-course matrix is documented in `docs/department_course_matrix_schema.md`. In that schema, `department_id`, `department_name`, `broad_field`, and `selected_reason` are metadata columns and should not be used as clustering features.
 
@@ -60,11 +61,11 @@ The analysis follows these steps:
 
 1. Build a department-course matrix from recommended-course evidence.
 2. Construct baseline binary vectors.
-3. Construct refined binary vectors by excluding broad subject labels.
+3. Construct IDF-weighted vectors (`weight = ln(N / df)`) to down-weight courses common to many departments.
 4. Compute cosine similarity between department vectors.
-5. Apply hierarchical clustering as the main clustering method.
+5. Apply hierarchical clustering (average linkage) as the main clustering method.
 6. Use k-means clustering as a comparison method.
-7. Compare baseline and refined results using cluster interpretability and internal metrics such as silhouette score and Davies-Bouldin index.
+7. Compare baseline and IDF-weighted results using cluster interpretability, recovery of academic-field structure (ARI/NMI against `broad_field`), and a weighting-sensitivity sweep. Silhouette is reported but interpreted with caution, because it rewards a single dominant cluster and therefore favours the undifferentiated baseline.
 
 The project treats clustering results as exploratory patterns, not as final department recommendations.
 
@@ -73,22 +74,26 @@ The project treats clustering results as exploratory patterns, not as final depa
 The Progress Meeting focuses on the completed pre-final analysis:
 
 - construction of department-course matrices
-- baseline versus refined binary vector design
+- baseline binary versus IDF-weighted vector design
 - cosine similarity computation
 - hierarchical clustering results
 - k-means comparison
+- weighting-sensitivity analysis
 - preliminary dendrogram and heatmap interpretation
 - initial discussion of limitations
 
-Main progress-stage outputs include:
+Main progress-stage outputs (IDF-weighted analysis) include:
 
-- `results/figures/keep_for_report/course_similarity_heatmap.png`
-- `results/figures/keep_for_report/hierarchical_dendrogram.png`
-- `results/tables/keep_for_report/course_similarity_matrix.csv`
-- `results/tables/keep_for_report/hierarchical_cluster_assignments.csv`
-- `results/tables/keep_for_report/cluster_summary.csv`
+- `results/figures/keep_for_report/idf_dendrogram.png`
+- `results/tables/keep_for_report/idf_cluster_assignments.csv`
+- `results/tables/keep_for_report/idf_cluster_summary.csv`
+- `results/tables/keep_for_report/course_idf_weights.csv`
+- `results/tables/keep_for_report/weighting_sensitivity.csv`
+- `results/tables/keep_for_report/cluster_robustness.csv`
 
-Report-relevant outputs are kept under `keep_for_report/`. The analysis uses binary course vectors; earlier weighted-vector variants are not used as evidence and are not version-controlled.
+The baseline binary outputs (`hierarchical_cluster_assignments.csv`, `cluster_summary.csv`, `course_similarity_matrix.csv`, `course_similarity_heatmap.png`, `hierarchical_dendrogram.png`) are retained for the baseline-versus-IDF comparison.
+
+Report-relevant outputs are kept under `keep_for_report/`. Earlier weighted-vector variants are not used as evidence and are not version-controlled.
 
 Some generated file names still contain `pre_expert` for historical reasons. Expert card-sorting validation is conducted separately from the Progress Meeting core clustering analysis (see Section 8) and is not required for the Progress Meeting milestone.
 
@@ -101,7 +106,7 @@ Expected report components:
 1. Motivation and research question
 2. Explanation of the 25-department purposive sample
 3. Department-course matrix construction
-4. Baseline and refined vector design
+4. Baseline and IDF-weighted vector design
 5. Cosine similarity and clustering methods
 6. Preliminary clustering results
 7. Expert card-sorting validation (consensus co-grouping versus clustering, ARI/NMI)

@@ -3,7 +3,7 @@
 Upload these files to Overleaf:
 
 - `main.tex`
-- `hierarchical_dendrogram.png`
+- `idf_dendrogram.png` (figure referenced by `main.tex`)
 
 Recommended Overleaf compiler: XeLaTeX.
 

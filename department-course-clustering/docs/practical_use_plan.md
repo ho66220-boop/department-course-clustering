@@ -15,7 +15,7 @@ The core project asks:
 The current analysis focuses on:
 
 - department-course matrix construction
-- baseline and refined course vectors
+- baseline and IDF-weighted course vectors
 - cosine similarity
 - hierarchical clustering
 - k-means comparison

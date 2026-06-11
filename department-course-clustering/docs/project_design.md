@@ -19,7 +19,7 @@ The core scope is intentionally limited to the following:
 1. Use 25 selected academic departments.
 2. Treat the 25 departments as a purposive sample, not as a statistically representative sample.
 3. Build a department-course matrix from recommended high-school course evidence.
-4. Compare baseline and refined course vectors.
+4. Compare baseline and IDF-weighted course vectors.
 5. Compute cosine similarity between department vectors.
 6. Apply hierarchical clustering as the main clustering method.
 7. Use k-means clustering as a comparison method.
@@ -48,11 +48,11 @@ Only course-feature columns should be used as clustering inputs. Metadata column
 
 ## Vector Design
 
-The baseline vector includes all standardized course features.
+The baseline vector uses the raw binary presence of each course.
 
-The refined vector removes broad subject-level labels such as Korean, general mathematics, English, general social studies, and general science. This refinement is used because broad subject labels appear across many departments and can reduce department-specific discriminative power.
+The main analysis re-weights each course by inverse document frequency (IDF), `weight = ln(N / df)`, so that courses listed by many departments (for example 확률과 통계, listed by 21 of 25 departments) contribute less than department-specific courses. The subject guide lists specific elective subjects rather than broad subject labels, so deleting broad labels is not applicable to this data; IDF is the data-driven, parameter-free way to express the same intent of reducing the influence of widely shared courses.
 
-The refined vector keeps more specific course features, such as calculus, geometry, probability/statistics, physics, chemistry, biology, earth science, information, economics, and ethics.
+The weighting strength is examined with a single-knob sensitivity sweep (`weight = idf ** alpha`, where `alpha = 0` is the unweighted baseline and `alpha = 1` is standard IDF).
 
 The main binary coding rule is:
 
@@ -68,7 +68,7 @@ Repeated mentions are not summed. The matrix records whether a related elective 
 The Progress Meeting should focus on:
 
 - department-course matrix construction
-- baseline versus refined binary vector design
+- baseline versus IDF-weighted vector design
 - cosine similarity
 - hierarchical clustering
 - k-means comparison

@@ -21,7 +21,7 @@ Required metadata columns:
 | `broad_field` | Broad academic field label | No |
 | `selected_reason` | Short rationale for inclusion in the 25-department purposive sample | No |
 
-Recommended refined course-feature columns:
+Recommended course-feature columns (illustrative):
 
 | Column | Role | Use in clustering |
 | --- | --- | --- |
@@ -37,9 +37,9 @@ Recommended refined course-feature columns:
 | `ethics` | Ethics or philosophy-related preparation | Yes |
 | `other_relevant_courses` | Other relevant recommended courses not captured above | Yes |
 
-Only the refined course-feature columns should be used as clustering features. Metadata columns must be excluded before computing cosine similarity or fitting clustering models.
+Only the course-feature columns should be used as clustering features. Metadata columns must be excluded before computing cosine similarity or fitting clustering models.
 
-The refined matrix intentionally excludes broad common subject labels such as Korean, general mathematics, English, general social studies, and general science. These broad labels are useful for baseline documentation, but they are not used in the main refined clustering input because they appear across many departments and can obscure department-specific preparation patterns.
+The matrix keeps all course-feature columns. Rather than deleting broad common subjects (which the specific-elective subject guide does not actually contain as columns), the main analysis down-weights widely shared courses at analysis time using inverse document frequency (`weight = ln(N / df)`), so that courses appearing across many departments contribute less to the similarity computation.
 
 ## Coding Rule
 
@@ -61,7 +61,7 @@ For cosine similarity, hierarchical clustering, and k-means clustering, the feat
 - `broad_field`
 - `selected_reason`
 
-The clustering input should include only numeric refined course-feature columns. It should not include metadata columns, broad common subject columns, or any non-feature variables such as expert consensus / co-grouping scores, admission score feasibility, or candidate-generation variables.
+The clustering input should include only numeric course-feature columns (IDF weighting is applied to these at analysis time). It should not include metadata columns or any non-feature variables such as expert consensus / co-grouping scores, admission score feasibility, or candidate-generation variables.
 
 ## Validation Expectations
 
