@@ -88,7 +88,7 @@ Main progress-stage outputs include:
 - `results/tables/keep_for_report/hierarchical_cluster_assignments.csv`
 - `results/tables/keep_for_report/cluster_summary.csv`
 
-Report-relevant outputs are kept under `keep_for_report/`; alternative weighted-vector variants are kept under `deletion_candidates/` and are not used as main evidence.
+Report-relevant outputs are kept under `keep_for_report/`. The analysis uses binary course vectors; earlier weighted-vector variants are not used as evidence and are not version-controlled.
 
 Some generated file names still contain `pre_expert` for historical reasons. Expert card-sorting validation is conducted separately from the Progress Meeting core clustering analysis (see Section 8) and is not required for the Progress Meeting milestone.
 
