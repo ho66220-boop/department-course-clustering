@@ -43,4 +43,4 @@ For this reason, the current project prioritizes diversity across selected depar
 
 The results cannot be generalized to all academic departments. The 25 departments are a purposive sample, not a statistically representative sample. The goal is to test whether course-profile-based vectors produce interpretable and practically useful clustering patterns, not to build a full department recommendation system.
 
-Expert consensus, admission score feasibility, and candidate-generation tables are treated as possible future extensions rather than core components of the current progress-stage analysis.
+Expert card-sorting validation is in progress as a separate external-validation component and is reported in the Final Report. Admission score feasibility and candidate-generation tables are treated as possible future extensions rather than core components of the current progress-stage analysis.

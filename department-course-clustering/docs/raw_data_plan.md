@@ -72,12 +72,17 @@ Core processed outputs should include:
 
 Metadata columns such as department ID, department name, broad field, and selected reason should not be used as clustering features.
 
+## Validation Data (In Progress)
+
+The following are actively collected for external validation and reported in the Final Report:
+
+- consultant card sorting responses
+- expert consensus / co-occurrence scores derived from them
+
 ## Future-Extension Data
 
 The following data may be useful later but is outside the simplified core scope:
 
-- consultant card sorting responses
-- expert consensus scores
 - admission score or grade-cut data
 - candidate-generation tables
 - real counseling workflow data

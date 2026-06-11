@@ -61,7 +61,7 @@ For cosine similarity, hierarchical clustering, and k-means clustering, the feat
 - `broad_field`
 - `selected_reason`
 
-The clustering input should include only numeric refined course-feature columns. It should not include metadata columns, broad common subject columns, expert consensus, admission score feasibility, candidate-generation variables, or any other future-work variables.
+The clustering input should include only numeric refined course-feature columns. It should not include metadata columns, broad common subject columns, or any non-feature variables such as expert consensus / co-grouping scores, admission score feasibility, or candidate-generation variables.
 
 ## Validation Expectations
 

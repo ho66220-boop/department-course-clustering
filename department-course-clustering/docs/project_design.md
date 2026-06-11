@@ -77,18 +77,19 @@ The Progress Meeting should focus on:
 
 This is sufficient for the Progress Meeting requirement of implementing at least one clustering method and presenting preliminary results.
 
+## Expert Validation (In Progress)
+
+Expert card-sorting validation is an active component, distinct from the Progress Meeting core clustering analysis. Practicing admission counselors independently group the 25 departments by recommended-course similarity in an open card sort; responses are aggregated into a 25-by-25 co-occurrence matrix and compared with the clustering output using ARI, NMI, and pairwise agreement. The instrument is finalized in `templates/card_sorting/`; collection is scheduled for W14 and results are reported in the Final Report. This component includes the comparison between course-based similarity and expert co-grouping and the analysis of disagreement cases.
+
 ## Future Work
 
-The following are future extensions, not core Progress Meeting tasks:
+The following remain genuine future extensions, not core term-project tasks:
 
-- expert consensus using consultant card sorting
-- comparison between course-based similarity and expert co-grouping
 - admission score feasibility analysis
-- disagreement case analysis
 - candidate-generation tables
 - real counseling workflow validation
 
-These extensions may be discussed briefly in the final report, but they should not be framed as completed core analysis unless explicitly implemented later.
+These extensions may be discussed briefly in the final report, but they should not be framed as completed analysis unless explicitly implemented later.
 
 ## Recommended Final Claim
 

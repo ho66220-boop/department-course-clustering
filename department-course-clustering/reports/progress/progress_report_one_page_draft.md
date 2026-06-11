@@ -20,4 +20,4 @@
 
 ## 다음 단계와 한계
 
-이 결과는 exploratory pattern으로 해석해야 하며, 학과 추천의 최종 판단으로 사용하지 않는다. 다음 단계에서는 k-means clustering과 cluster-number sensitivity를 추가하여 방법 간 안정성을 확인하고, 큰 군집과 singleton cluster의 해석 한계를 정리할 예정이다. Expert consensus, admission score feasibility, candidate generation은 Progress-stage 핵심 분석이 아니라 future work로 남겨둔다.
+이 결과는 exploratory pattern으로 해석해야 하며, 학과 추천의 최종 판단으로 사용하지 않는다. 다음 단계에서는 k-means clustering과 cluster-number sensitivity를 추가하여 방법 간 안정성을 확인하고, 큰 군집과 singleton cluster의 해석 한계를 정리할 예정이다. 전문가 card sorting 기반 외부 검증은 현재 진행 중이며 Final Report에서 일치도(ARI/NMI)를 보고한다. admission score feasibility와 candidate generation은 future work로 남겨둔다.

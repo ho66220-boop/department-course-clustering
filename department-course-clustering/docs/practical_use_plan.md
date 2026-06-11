@@ -33,22 +33,21 @@ A future counseling-support workflow could use the clustering results as one inp
 
 This workflow is not implemented as part of the current simplified project.
 
+## Expert Validation (In Progress)
+
+Expert card-sorting validation — expert consensus, the comparison between course-based similarity and expert co-grouping, and disagreement-case analysis — is already in progress and is reported in the Final Report (see the project README, Section 8). It is a validation component, separate from the practical-use workflow described above.
+
 ## Future Extensions
 
-Future work may include:
+The following remain future work and are not required Progress Meeting deliverables:
 
-- expert consensus using consultant card sorting
-- comparison between course-based similarity and expert co-grouping
 - admission score feasibility analysis
-- disagreement case analysis
 - candidate-generation tables for counseling examples
 - validation in real counseling settings
 
-These extensions should be framed as optional final-stage or future work, not as required Progress Meeting deliverables.
-
 ## Risk Of Overextension
 
-Adding expert consensus, admission scores, and candidate-generation tables too early can make the project look like a recommendation system. It can also expand the report beyond the scope of a 5-page exploratory clustering study.
+Adding admission scores and candidate-generation tables too early can make the project look like a recommendation system. It can also expand the report beyond the scope of a 5-page exploratory clustering study.
 
 For the current term project, the safer claim is:
 
