@@ -40,12 +40,8 @@ results/tables/*
 !results/tables/.gitkeep
 !results/figures/keep_for_report/
 !results/figures/keep_for_report/*.png
-!results/figures/deletion_candidates/
-!results/figures/deletion_candidates/*.png
 !results/tables/keep_for_report/
 !results/tables/keep_for_report/*.csv
-!results/tables/deletion_candidates/
-!results/tables/deletion_candidates/*.csv
 
 # Local report builds
 *.aux
