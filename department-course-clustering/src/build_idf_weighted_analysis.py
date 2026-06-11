@@ -57,6 +57,8 @@ LINKAGE_METHOD = "average"          # primary method (most stable under the swee
 N_CLUSTERS = 4
 ALPHA_SWEEP = [round(a, 2) for a in np.linspace(0.0, 2.0, 9)]
 PRIMARY_ALPHA = 1.0                 # standard IDF, no hand tuning
+CORE_SUBCLUSTERS_K = 3              # sub-clusters within the largest primary cluster
+SUB_LINKAGE = "complete"           # sharper splits for the dense engineering-science core
 
 
 def setup_plot_style() -> None:
@@ -188,6 +190,57 @@ def robustness(matrix: pd.DataFrame, name_col: str, x: np.ndarray, idf: np.ndarr
     return table
 
 
+def subcluster_core(matrix: pd.DataFrame, name_col: str, course_columns: list[str],
+                    labels: np.ndarray) -> pd.DataFrame:
+    """Sub-cluster the largest primary cluster (the dense engineering-science core).
+
+    IDF is recomputed *within* the subset, because courses common to every
+    core department carry no within-core discriminative signal; local IDF
+    down-weights them so the sub-structure can emerge.
+    """
+    core_id = pd.Series(labels).value_counts().idxmax()
+    mask = labels == core_id
+    core_names = matrix[name_col].to_numpy()[mask]
+    core_ids = matrix["department_id"].to_numpy()[mask]
+
+    xc = matrix[course_columns].to_numpy(dtype=float)[mask]
+    present = xc.sum(axis=0) > 0
+    xc = xc[:, present]
+    features = np.array(course_columns)[present]
+    local_idf = np.log(xc.shape[0] / xc.sum(axis=0))
+    weighted = xc * local_idf
+
+    distance = pdist(weighted, metric="cosine")
+    z = linkage(distance, method=SUB_LINKAGE)
+    sub_labels = fcluster(z, t=CORE_SUBCLUSTERS_K, criterion="maxclust")
+
+    rows = []
+    for sub_id in sorted(set(sub_labels)):
+        members = sub_labels == sub_id
+        mean = weighted[members].mean(axis=0)
+        top = features[np.argsort(-mean)][:5]
+        rows.append(
+            {
+                "subcluster_id": int(sub_id),
+                "n": int(members.sum()),
+                "departments": "; ".join(core_names[members]),
+                "distinctive_courses": ", ".join(top),
+            }
+        )
+    table = pd.DataFrame(rows).sort_values("subcluster_id")
+    table.to_csv(REPORT_TABLES / "core_subclusters.csv", index=False, encoding="utf-8-sig")
+
+    fig_labels = [f"{i} {n}" for i, n in zip(core_ids, core_names)]
+    plt.figure(figsize=(11, 6))
+    dendrogram(z, labels=fig_labels, leaf_rotation=75, leaf_font_size=9, color_threshold=None)
+    plt.title(f"Sub-clustering of the engineering-science core (local IDF, {SUB_LINKAGE})")
+    plt.ylabel("Cosine distance")
+    plt.tight_layout()
+    plt.savefig(REPORT_FIGURES / "idf_core_subdendrogram.png", dpi=200)
+    plt.close()
+    return table
+
+
 def plot_dendrogram(z: np.ndarray, matrix: pd.DataFrame, name_col: str) -> None:
     labels = [f"{i} {n}" for i, n in zip(matrix["department_id"], matrix[name_col])]
     plt.figure(figsize=(13, 7))
@@ -223,6 +276,7 @@ def main() -> None:
 
     sens = sensitivity(x, idf)
     robust = robustness(matrix, name_col, x, idf, labels)
+    subclusters = subcluster_core(matrix, name_col, course_columns, labels)
 
     print(f"input={INPUT_MATRIX.name}  departments={len(matrix)}  features={len(course_columns)}")
     print(f"primary: idf alpha={PRIMARY_ALPHA}, linkage={LINKAGE_METHOD}, k={N_CLUSTERS}, silhouette={sil:.3f}")
@@ -232,8 +286,12 @@ def main() -> None:
     print("\nrobustness (mean co-assignment over alpha sweep):")
     for _, r in robust.iterrows():
         print(f"  C{r['cluster_id']} (n={r['n']}): {r['mean_co_assignment_over_alpha']}")
+    print(f"\ncore sub-clusters (largest primary cluster, local IDF, {SUB_LINKAGE}, k={CORE_SUBCLUSTERS_K}):")
+    for _, r in subclusters.iterrows():
+        print(f"  S{r['subcluster_id']} (n={r['n']}): {r['departments']}")
     print("\noutputs -> results/tables/keep_for_report (idf_*, course_idf_weights, "
-          "weighting_sensitivity, cluster_robustness), results/figures/keep_for_report/idf_dendrogram.png")
+          "weighting_sensitivity, cluster_robustness, core_subclusters), "
+          "results/figures/keep_for_report/{idf_dendrogram,idf_core_subdendrogram}.png")
 
 
 if __name__ == "__main__":
