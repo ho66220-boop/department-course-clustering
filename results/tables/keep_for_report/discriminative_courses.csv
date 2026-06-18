@@ -1,10 +1,8 @@
 ﻿tier,course,document_frequency,idf,recommending
-high_discriminative,과학의 역사와 문화,1,3.219,건축학과
-high_discriminative,교육의 이해,1,3.219,심리학과
-high_discriminative,논리와 사고,1,3.219,국어국문학과
-high_discriminative,미디어 영어,1,3.219,디자인학과
-high_discriminative,생활과학 탐구,1,3.219,식품영양학과
-high_discriminative,화학 실험,1,3.219,약학과
+cluster_discriminative,창의공학 설계,6,1.427,공학 6개
+cluster_discriminative,경제 수학,3,2.12,경영학·경제학·응용통계학
+cluster_discriminative,보건,2,2.526,간호학·약학
+cluster_discriminative,언어생활 탐구,2,2.526,국어국문학·사학
 low_discriminative,확률과 통계,21,0.174,공통(21개 학과)
 low_discriminative,대수,17,0.386,공통(17개 학과)
 low_discriminative,정보,16,0.446,공통(16개 학과)

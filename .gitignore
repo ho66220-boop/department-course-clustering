@@ -91,3 +91,6 @@ src/update_card_sorting_25.py
 reference_progress_file
 reference_structure.pptx
 reports/latex_progress_upload.zip
+
+# Office lock/temp files
+~$*

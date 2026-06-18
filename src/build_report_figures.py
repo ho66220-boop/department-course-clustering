@@ -12,6 +12,7 @@ Run:
 from __future__ import annotations
 
 import pathlib
+from collections import Counter
 
 import matplotlib
 import matplotlib.pyplot as plt
@@ -31,8 +32,28 @@ AMBIGUITY_THRESHOLD = 0.5
 EMPHASIS_COLOR = "#b2182b"   # burgundy: ambiguous (below threshold)
 BASE_COLOR = "#9e9e9e"       # gray: robustly grouped (at/above threshold)
 
-N_HIGH_DISCRIMINATIVE = 6    # block A: one df=1 course per distinct broad_field
-N_LOW_DISCRIMINATIVE = 5     # block B: most common courses
+N_CLUSTER_DISCRIMINATIVE = 6   # block A cap (one per field; how many qualify depends on data)
+N_LOW_DISCRIMINATIVE = 5       # block B: most common courses
+CLUSTER_DF_MIN, CLUSTER_DF_MAX = 2, 6   # block A: courses recommended by a small group
+CLUSTER_PURITY_MIN = 0.66      # fraction of the small group falling in one academic field
+
+
+def coarse_field(broad_field: str) -> str:
+    """Map a fine broad_field label to a coarse academic field."""
+    f = str(broad_field)
+    if "medical" in f or "health" in f:
+        return "의약보건"
+    if "engineering" in f or "industry" in f:
+        return "공학"
+    if "arts" in f:
+        return "예술"
+    if "social" in f:
+        return "사회"
+    if "humanities" in f:
+        return "인문"
+    if "natural" in f:
+        return "자연"
+    return "기타"
 
 
 def setup_style() -> None:
@@ -93,30 +114,47 @@ def table_discriminative_courses() -> pd.DataFrame:
     course_dept = evidence.groupby("course_name_standardized")["department_name_ko"].agg(
         lambda s: sorted(set(s))
     )
-    course_field = evidence.groupby("course_name_standardized")["broad_field"].agg(
-        lambda s: sorted(set(s))[0]
+    course_fields = evidence.groupby("course_name_standardized")["broad_field"].agg(
+        lambda s: [coarse_field(x) for x in s]
     )
+    df_of = dict(zip(weights["course"], weights["document_frequency"]))
     idf_of = dict(zip(weights["course"], weights["idf"]))
 
+    def group_label(departments: list[str], field: str) -> str:
+        if len(departments) <= 3:
+            return "·".join(d[:-1] if d.endswith("과") else d for d in departments)
+        return f"{field} {len(departments)}개"
+
     rows: list[dict] = []
-    # Block A: one df=1 course per distinct broad_field
-    df1 = weights[weights["document_frequency"] == 1].sort_values("course")
+    # Block A: courses concentrated in one coherent academic field (cluster-discriminative).
+    # A course recommended by a small group whose departments share a field flags that
+    # cluster; this avoids the circular df=1 case (a single department is tautologically
+    # "discriminative" without being defining).
+    candidates = []
+    for course, fields in course_fields.items():
+        df = int(df_of.get(course, len(fields)))
+        if not (CLUSTER_DF_MIN <= df <= CLUSTER_DF_MAX):
+            continue
+        field, top = Counter(fields).most_common(1)[0]
+        purity = top / df
+        if purity >= CLUSTER_PURITY_MIN:
+            candidates.append((purity, df, course, field))
+    candidates.sort(key=lambda t: (-t[0], -t[1], t[2]))
     seen_fields: set[str] = set()
-    for course in df1["course"]:
-        field = course_field.get(course)
-        if field is None or field in seen_fields:
+    for purity, df, course, field in candidates:
+        if field in seen_fields:
             continue
         seen_fields.add(field)
         rows.append(
             {
-                "tier": "high_discriminative",
+                "tier": "cluster_discriminative",
                 "course": course,
-                "document_frequency": 1,
+                "document_frequency": df,
                 "idf": round(float(idf_of[course]), 3),
-                "recommending": course_dept[course][0],
+                "recommending": group_label(course_dept[course], field),
             }
         )
-        if len(rows) >= N_HIGH_DISCRIMINATIVE:
+        if len(rows) >= N_CLUSTER_DISCRIMINATIVE:
             break
 
     # Block B: most common courses (low IDF, shared)
@@ -141,12 +179,12 @@ def table_discriminative_courses() -> pd.DataFrame:
     lines = [
         r"\begin{tabular}{lccl}",
         r"\hline",
-        r"과목 & df & IDF & 권장 학과 \\",
+        r"과목 & df & IDF & 권장 학과 군집 \\",
         r"\hline",
-        r"\multicolumn{4}{l}{\textit{고변별 (희소 과목, df=1 $\rightarrow$ 특정 학과 직결)}} \\",
+        r"\multicolumn{4}{l}{\textit{군집 변별 과목 (특정 계열 군집에만 등장)}} \\",
     ]
     for row in rows:
-        if row["tier"] == "high_discriminative":
+        if row["tier"] == "cluster_discriminative":
             lines.append(f"{row['course']} & {row['document_frequency']} & {row['idf']:.2f} & {row['recommending']} \\\\")
     lines.append(r"\hline")
     lines.append(r"\multicolumn{4}{l}{\textit{저변별 (공통 과목, 변별 거의 없음)}} \\")
