@@ -21,6 +21,7 @@ Run:
 """
 from __future__ import annotations
 
+import itertools
 import pathlib
 
 import matplotlib
@@ -114,6 +115,43 @@ def algorithm_clusters(k: int) -> tuple[dict, dict]:
     return cut(x * idf), cut(x)
 
 
+def aligned_idf_cosine(names) -> np.ndarray:
+    """IDF cosine similarity matrix, reordered to the card-sort department order."""
+    matrix = pd.read_csv(MATRIX, encoding="utf-8-sig")
+    course_cols = [c for c in matrix.columns if c not in METADATA]
+    order_names = list(matrix["department_name_ko"])
+    x = matrix[course_cols].to_numpy(float)
+    idf = np.log(len(matrix) / x.sum(axis=0))
+    cos = 1 - squareform(pdist(x * idf, metric="cosine"))
+    idx = [order_names.index(n) for n in names]
+    return cos[np.ix_(idx, idx)]
+
+
+def disagreement_pairs(co: np.ndarray, names) -> pd.DataFrame:
+    """Rank department pairs by internal (IDF) vs external (expert) divergence.
+
+    divergence = z(idf_cosine) - z(co_classification):
+      > 0  internal O / external X  (shared course prep, experts keep apart)
+      < 0  internal X / external O  (experts group, course prep diverges)
+    """
+    cos = aligned_idf_cosine(names)
+    n = len(names)
+    rows = [
+        {"A": names[i], "B": names[j],
+         "idf_cosine": round(float(cos[i, j]), 3),
+         "co_classification": round(float(co[i, j]), 3)}
+        for i, j in itertools.combinations(range(n), 2)
+    ]
+    pairs = pd.DataFrame(rows)
+    zi = (pairs["idf_cosine"] - pairs["idf_cosine"].mean()) / pairs["idf_cosine"].std()
+    ze = (pairs["co_classification"] - pairs["co_classification"].mean()) / pairs["co_classification"].std()
+    pairs["divergence"] = (zi - ze).round(3)
+    pairs["type"] = np.where(pairs["divergence"] > 0, "internalO_externalX", "internalX_externalO")
+    pairs = pairs.sort_values("divergence", ascending=False).reset_index(drop=True)
+    pairs.to_csv(REPORT_TABLES / "cardsort_disagreement_pairs.csv", index=False, encoding="utf-8-sig")
+    return pairs
+
+
 # --------------------------------------------------------------------------- figures
 def fig_heatmap(co: np.ndarray, names, order, clusters) -> None:
     ordered = co[np.ix_(order, order)]
@@ -166,15 +204,7 @@ def fig_agreement(agreement: pd.DataFrame) -> None:
 
 
 def fig_scatter(co: np.ndarray, names) -> None:
-    matrix = pd.read_csv(MATRIX, encoding="utf-8-sig")
-    course_cols = [c for c in matrix.columns if c not in METADATA]
-    order_names = list(matrix["department_name_ko"])
-    x = matrix[course_cols].to_numpy(float)
-    idf = np.log(len(matrix) / x.sum(axis=0))
-    cos = 1 - squareform(pdist(x * idf, metric="cosine"))
-    # align algorithm matrix order to card-sort order
-    idx = [order_names.index(n) for n in names]
-    cos = cos[np.ix_(idx, idx)]
+    cos = aligned_idf_cosine(names)
     iu = np.triu_indices(len(names), 1)
     xs, ys = cos[iu], co[iu]
     r = np.corrcoef(xs, ys)[0, 1]
@@ -254,6 +284,7 @@ def main() -> None:
     fig_agreement(agreement)
     r = fig_scatter(co, names)
     write_tables(co, names, clusters_k4, idf_k4, bin_k4, agreement)
+    disagree = disagreement_pairs(co, names)
 
     print(f"input={path.name}  raters={n_raters}  departments={len(names)}")
     print(f"co-occurrence vs IDF cosine: r={r:.3f}")
@@ -262,6 +293,12 @@ def main() -> None:
     print("\nconsensus k=4 clusters:")
     for c in sorted(set(clusters_k4)):
         print(f"  CC{c}: " + ", ".join(np.array(names)[clusters_k4 == c]))
+    print("\nType 1 (내부 O, 외부 X) — 준비기반 공유, 전문가 분리:")
+    for _, row in disagree.head(4).iterrows():
+        print(f"  {row['A']}-{row['B']}: idf={row['idf_cosine']}, coclass={row['co_classification']}")
+    print("Type 2 (내부 X, 외부 O) — 전문가 묶음, 준비과목 분기:")
+    for _, row in disagree.tail(4).iloc[::-1].iterrows():
+        print(f"  {row['A']}-{row['B']}: idf={row['idf_cosine']}, coclass={row['co_classification']}")
     print("\nfigures -> results/figures/keep_for_report/cardsort_*.png")
     print("tables  -> results/tables/keep_for_report/cardsort_*.csv")
 

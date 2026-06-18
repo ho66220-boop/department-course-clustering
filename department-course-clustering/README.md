@@ -93,6 +93,17 @@ Main progress-stage outputs (IDF-weighted analysis) include:
 - `results/tables/keep_for_report/weighting_sensitivity.csv`
 - `results/tables/keep_for_report/cluster_robustness.csv`
 
+Expert card-sorting outputs (`src/build_card_sorting_analysis.py`):
+
+- `results/figures/keep_for_report/cardsort_cooccurrence_heatmap.png`
+- `results/figures/keep_for_report/cardsort_agreement_bars.png`
+- `results/figures/keep_for_report/cardsort_consensus_dendrogram.png`
+- `results/figures/keep_for_report/cardsort_cooccur_vs_idf_scatter.png`
+- `results/tables/keep_for_report/cardsort_agreement.csv`
+- `results/tables/keep_for_report/cardsort_consensus_assignments.csv`
+- `results/tables/keep_for_report/cardsort_department_ambiguity.csv`
+- `results/tables/keep_for_report/cardsort_disagreement_pairs.csv` (internal-vs-external divergence)
+
 The baseline binary outputs (`hierarchical_cluster_assignments.csv`, `cluster_summary.csv`, `course_similarity_matrix.csv`, `course_similarity_heatmap.png`, `hierarchical_dendrogram.png`) are retained for the baseline-versus-IDF comparison.
 
 Report-relevant outputs are kept under `keep_for_report/`. Earlier weighted-vector variants are not used as evidence and are not version-controlled.
