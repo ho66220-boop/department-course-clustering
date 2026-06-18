@@ -6,6 +6,7 @@ Upload these files to Overleaf (all figures referenced by `main.tex`):
 - `idf_dendrogram.png`
 - `idf_core_subdendrogram.png`
 - `cardsort_cooccurrence_heatmap.png`
+- `cardsort_department_ambiguity_bars.png`
 - `cardsort_agreement_bars.png`
 - `cardsort_cooccur_vs_idf_scatter.png`
 
