@@ -64,7 +64,7 @@ N_CLUSTERS = 4
 ALPHA_SWEEP = [round(a, 2) for a in np.linspace(0.0, 2.0, 9)]
 PRIMARY_ALPHA = 1.0                 # standard IDF, no hand tuning
 CORE_SUBCLUSTERS_K = 3              # sub-clusters within the largest primary cluster
-SUB_LINKAGE = "complete"           # sharper splits for the dense engineering-science core
+SUB_LINKAGE = "complete"           # sharper splits for the dense STEM-health core
 
 
 def setup_plot_style() -> None:
@@ -222,7 +222,7 @@ def robustness(matrix: pd.DataFrame, name_col: str, x: np.ndarray, idf: np.ndarr
 
 def subcluster_core(matrix: pd.DataFrame, name_col: str, course_columns: list[str],
                     labels: np.ndarray) -> pd.DataFrame:
-    """Sub-cluster the largest primary cluster (the dense engineering-science core).
+    """Sub-cluster the largest primary cluster (the dense STEM-health core).
 
     IDF is recomputed *within* the subset, because courses common to every
     core department carry no within-core discriminative signal; local IDF
@@ -263,7 +263,7 @@ def subcluster_core(matrix: pd.DataFrame, name_col: str, course_columns: list[st
     fig_labels = [f"{i} {n}" for i, n in zip(core_ids, core_names)]
     plt.figure(figsize=(11, 6))
     dendrogram(z, labels=fig_labels, leaf_rotation=75, leaf_font_size=9, color_threshold=None)
-    plt.title(f"Sub-clustering of the engineering-science core (local IDF, {SUB_LINKAGE})")
+    plt.title(f"Sub-clustering of the STEM-health core (local IDF, {SUB_LINKAGE})")
     plt.ylabel("Cosine distance")
     plt.tight_layout()
     plt.savefig(REPORT_FIGURES / "idf_core_subdendrogram.png", dpi=200)
@@ -275,9 +275,8 @@ def kmeans_comparison(x: np.ndarray, idf: np.ndarray) -> pd.DataFrame:
     """Agreement between hierarchical (primary) and k-means clusters on IDF vectors.
 
     A method-robustness check: the two algorithms agree on the macro structure
-    but diverge on the finer k=4 boundary, where k-means favours a
-    chemistry-bio-medical grouping that mirrors the hierarchical core
-    sub-structure.
+    but diverge on the finer k=4 boundary. (The exact k=4 k-means membership
+    is not characterised here.)
     """
     w = normalize(x * (idf ** PRIMARY_ALPHA))
     rows = []

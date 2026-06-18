@@ -31,7 +31,7 @@ The main research question is:
 The project also considers two supporting questions:
 
 1. How can recommended-course information be converted into department-course vectors?
-2. Does down-weighting courses common to many departments (inverse document frequency) produce more interpretable and field-consistent clusters than an unweighted baseline vector?
+2. How does down-weighting courses common to many departments (inverse document frequency) change the clustering compared with an unweighted baseline vector?
 
 ## 3. Why 25 Departments?
 
@@ -145,7 +145,7 @@ The final report will not claim that the project recommends departments automati
 
 ## 8. Expert Validation and Future Extensions
 
-Expert card-sorting validation is complete, separate from the Progress Meeting core clustering analysis. Fourteen practicing admission consultants independently grouped the 25 departments by recommended-course similarity in an open card sort, with no constraint on the number of groups. Responses were aggregated into a 25-by-25 co-occurrence matrix to derive a consensus clustering, then compared with the algorithmic clusters using Adjusted Rand Index (ARI) and Normalized Mutual Information (NMI). The IDF clustering matches the expert consensus far better than the binary baseline (k=4 ARI 0.85 vs 0.59; co-occurrence vs IDF cosine r=0.68), which externally validates the IDF weighting choice. Outputs: `results/figures/keep_for_report/cardsort_*.png` and `results/tables/keep_for_report/cardsort_*.csv` (the raw response workbook holds real respondent names and is not version-controlled).
+Expert card-sorting validation is complete, separate from the Progress Meeting core clustering analysis. Fourteen practicing admission consultants independently grouped the 25 departments by recommended-course similarity in an open card sort, with no constraint on the number of groups. Responses were aggregated into a 25-by-25 co-occurrence matrix to derive a consensus clustering, then compared with the algorithmic clusters using Adjusted Rand Index (ARI) and Normalized Mutual Information (NMI). At the macro level (k=3) both the IDF and binary clusterings match the expert consensus strongly (ARI 0.84); the top-level k=4 partition is dominated by a STEM-health core and agrees only modestly (IDF 0.52, binary 0.59). IDF's benefit is limited to separating the medical-health group earlier (k=5 vs binary's k=7), course-level feature discrimination, and finer-granularity agreement at k=5–6 (co-occurrence vs IDF cosine r=0.68). Outputs: `results/figures/keep_for_report/cardsort_*.png` and `results/tables/keep_for_report/cardsort_*.csv` (the raw response workbook holds real respondent names and is not version-controlled).
 
 The following components remain genuine future extensions, outside the core scope of the current term project:
 
