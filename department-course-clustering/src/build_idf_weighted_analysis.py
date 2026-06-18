@@ -42,6 +42,7 @@ from sklearn.metrics import adjusted_rand_score, silhouette_score
 
 BASE = pathlib.Path(__file__).resolve().parents[1]
 INPUT_MATRIX = BASE / "data" / "processed" / "department_course_matrix_binary.csv"
+EVIDENCE = BASE / "data" / "processed" / "course_coding_evidence.csv"
 PROCESSED = BASE / "data" / "processed"
 REPORT_TABLES = BASE / "results" / "tables" / "keep_for_report"
 REPORT_FIGURES = BASE / "results" / "figures" / "keep_for_report"
@@ -93,6 +94,30 @@ def cluster(xf: np.ndarray, method: str, k: int) -> tuple[np.ndarray, float, np.
     except ValueError:
         sil = float("nan")
     return labels, sil, z
+
+
+def save_selection_type_idf(course_columns: list[str], idf: np.ndarray) -> pd.DataFrame:
+    """Mean IDF per selection type, justifying course-level (not type-level) weighting.
+
+    Shows that 융합선택 > 진로선택 > 일반선택 in discriminativeness, which is the
+    opposite of the intuitive hand-weighting (진로 highest) and therefore supports
+    using data-driven per-course IDF instead of arbitrary per-type weights.
+    """
+    if not EVIDENCE.exists():
+        return pd.DataFrame()
+    evidence = pd.read_csv(EVIDENCE, encoding="utf-8-sig")
+    idf_by_course = dict(zip(course_columns, idf))
+    evidence = evidence[evidence["course_name_standardized"].isin(idf_by_course)].copy()
+    evidence["idf"] = evidence["course_name_standardized"].map(idf_by_course)
+    table = (
+        evidence.groupby("selection_type")["idf"]
+        .agg(mentions="count", mean_idf="mean")
+        .reset_index()
+        .sort_values("mean_idf")
+    )
+    table["mean_idf"] = table["mean_idf"].round(3)
+    table.to_csv(REPORT_TABLES / "selection_type_idf.csv", index=False, encoding="utf-8-sig")
+    return table
 
 
 def save_idf_table(course_columns: list[str], x: np.ndarray, idf: np.ndarray) -> None:
@@ -261,6 +286,7 @@ def main() -> None:
     x = matrix[course_columns].to_numpy(dtype=float)
     idf = idf_weights(x)
     save_idf_table(course_columns, x, idf)
+    type_idf = save_selection_type_idf(course_columns, idf)
 
     xf = weighted_matrix(x, idf, PRIMARY_ALPHA)
     pd.concat(
@@ -279,6 +305,10 @@ def main() -> None:
     subclusters = subcluster_core(matrix, name_col, course_columns, labels)
 
     print(f"input={INPUT_MATRIX.name}  departments={len(matrix)}  features={len(course_columns)}")
+    if not type_idf.empty:
+        print("mean IDF by selection type (justifies per-course IDF):")
+        for _, r in type_idf.iterrows():
+            print(f"  {r['selection_type']}: mean_idf={r['mean_idf']} (mentions={int(r['mentions'])})")
     print(f"primary: idf alpha={PRIMARY_ALPHA}, linkage={LINKAGE_METHOD}, k={N_CLUSTERS}, silhouette={sil:.3f}")
     print("\nclusters (alpha=1, average):")
     for cid, grp in assignments.groupby("cluster_id"):

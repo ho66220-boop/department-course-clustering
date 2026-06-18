@@ -90,6 +90,7 @@ Main progress-stage outputs (IDF-weighted analysis) include:
 - `results/tables/keep_for_report/idf_cluster_summary.csv`
 - `results/tables/keep_for_report/core_subclusters.csv`
 - `results/tables/keep_for_report/course_idf_weights.csv`
+- `results/tables/keep_for_report/selection_type_idf.csv` (per-type IDF justifying course-level weighting)
 - `results/tables/keep_for_report/weighting_sensitivity.csv`
 - `results/tables/keep_for_report/cluster_robustness.csv`
 

@@ -35,7 +35,16 @@ IDF 군집은 전문가 합의와 강하게 일치하였으며($k=4$ Adjusted Ra
 학과 vector 간 유사도는 cosine similarity를 사용하였다.
 다만 가이드는 \emph{구체적} 선택과목을 나열하므로, 확률과 통계(21/25 학과)처럼 거의 모든 학과에 공통인 과목이 변별력을 떨어뜨린다.
 이를 보정하기 위해 각 과목을 inverse document frequency로 가중하였다($w=\ln(N/df)$, 별도 hyperparameter 없음).
-가중 강도는 단일 knob $w=\mathrm{idf}^{\alpha}$로 민감도 분석하였으며($\alpha=0$ 무가중, $\alpha=1$ 표준 IDF), 군집화는 average linkage hierarchical clustering(주 방법)과 k-means를 비교하였다.
+군집화는 average linkage hierarchical clustering(주 방법)과 k-means를 비교하였다.
+
+\subsection{가중 기준의 근거}
+
+가중치를 임의로 정하지 않기 위해, 본 연구는 정보검색의 표준 가중인 IDF를 채택하였다.
+IDF는 (i) 손으로 정하는 모수가 없이 과목별 가중이 출현 빈도로 결정되고, (ii) 흔한 과목을 자동으로 저가중하여 ``공통 과목이 변별력을 떨어뜨린다''는 문제에 직접 대응한다.
+실제로 선택과목 유형별 평균 IDF는 일반선택 $1.00$, 진로선택 $1.32$, 융합선택 $1.85$로 더 특수한 과목일수록 높은 가중을 받는다 --- 이는 ``진로선택이 가장 변별적''이라는 직관과 어긋나, 임의의 유형별 가중(예: 진로$=3$)이 오히려 데이터와 반대 방향임을 보여준다.
+따라서 유형 단위의 임의 가중 대신 과목 단위 IDF를 사용하였다.
+나아가 가중 강도를 $w=\mathrm{idf}^{\alpha}$의 단일 knob로 $\alpha\!\in\![0,2]$ 범위에서 흔든 민감도 분석에서($\alpha=0$ 무가중, $\alpha=1$ 표준 IDF) $\alpha=1$은 군집 구조가 일정하게 유지되는 안정 구간에 위치하여, 특정 가중을 골라 끼워맞춘 결과가 아님을 확인하였다.
+가중 기준은 card sorting과 독립적으로 데이터 내부 기준만으로 결정하여, 전문가 검증의 외부성을 훼손하지 않았다.
 
 \begin{figure*}[t]
   \centering
