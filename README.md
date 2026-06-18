@@ -1,5 +1,19 @@
 # Course-Based Clustering of Academic Departments for Admission Counseling Support
 
+Clustering 25 academic departments from their recommended high-school course profiles, and validating the result against practicing admission consultants.
+
+## Key Results
+
+- **IDF-weighted course vectors** group the 25 departments into interpretable clusters (medical-health, an engineering-science core, social/humanities, design), and down-weighting near-ubiquitous courses recovers academic-field structure far better than raw binary vectors (ARI vs field 0.32 → 0.47).
+- **Expert validation (14 admission consultants).** Aggregating their card sorts into a consensus clustering, the IDF result matches expert consensus much better than the binary baseline — **k=4 ARI 0.85 vs 0.59** (co-occurrence vs IDF cosine r = 0.68).
+- **Internal-vs-expert disagreement** yields counseling insights: *Type 1* (shared course preparation that consultants keep apart → overlooked alternatives) and *Type 2* (e.g. 조선해양↔자동차, grouped by consultants but preparing different electives → preparation-mismatch risk).
+
+![Algorithm clusters vs expert consensus (ARI): IDF beats binary at k=4](results/figures/keep_for_report/cardsort_agreement_bars.png)
+
+![IDF-weighted clustering dendrogram](results/figures/keep_for_report/idf_dendrogram.png)
+
+Full write-up: [`reports/latex_progress/main.tex`](reports/latex_progress/main.tex). Reproduce with `src/build_idf_weighted_analysis.py` and `src/build_card_sorting_analysis.py`.
+
 ## 1. Project Overview
 
 This repository contains an exploratory clustering project for the NOVA50301 AI Toolkit term project.
