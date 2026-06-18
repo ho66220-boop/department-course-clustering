@@ -11,6 +11,7 @@ env/
 Thumbs.db
 .vscode/
 .idea/
+.claude/
 
 # Sensitive or raw data
 data/raw/*
@@ -84,3 +85,8 @@ src/collect_careernet_majors.py
 src/create_raw_templates.py
 src/sync_raw_25_scope.py
 src/update_card_sorting_25.py
+
+# Reference materials and report build artifacts (kept locally, not in the repo)
+reference_progress_file
+reference_structure.pptx
+reports/latex_progress_upload.zip
