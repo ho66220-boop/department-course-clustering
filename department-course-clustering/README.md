@@ -93,6 +93,7 @@ Main progress-stage outputs (IDF-weighted analysis) include:
 - `results/tables/keep_for_report/selection_type_idf.csv` (per-type IDF justifying course-level weighting)
 - `results/tables/keep_for_report/weighting_sensitivity.csv`
 - `results/tables/keep_for_report/cluster_robustness.csv`
+- `results/tables/keep_for_report/kmeans_vs_hierarchical.csv` (method-robustness check)
 
 Expert card-sorting outputs (`src/build_card_sorting_analysis.py`):
 

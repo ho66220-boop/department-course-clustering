@@ -30,7 +30,10 @@ Run:
 """
 from __future__ import annotations
 
+import os
 import pathlib
+
+os.environ.setdefault("OMP_NUM_THREADS", "1")  # silence KMeans MKL warning on Windows
 
 import matplotlib
 import matplotlib.pyplot as plt
@@ -38,7 +41,9 @@ import numpy as np
 import pandas as pd
 from scipy.cluster.hierarchy import dendrogram, fcluster, linkage
 from scipy.spatial.distance import pdist, squareform
-from sklearn.metrics import adjusted_rand_score, silhouette_score
+from sklearn.cluster import KMeans
+from sklearn.metrics import adjusted_rand_score, normalized_mutual_info_score, silhouette_score
+from sklearn.preprocessing import normalize
 
 BASE = pathlib.Path(__file__).resolve().parents[1]
 INPUT_MATRIX = BASE / "data" / "processed" / "department_course_matrix_binary.csv"
@@ -266,6 +271,31 @@ def subcluster_core(matrix: pd.DataFrame, name_col: str, course_columns: list[st
     return table
 
 
+def kmeans_comparison(x: np.ndarray, idf: np.ndarray) -> pd.DataFrame:
+    """Agreement between hierarchical (primary) and k-means clusters on IDF vectors.
+
+    A method-robustness check: the two algorithms agree on the macro structure
+    but diverge on the finer k=4 boundary, where k-means favours a
+    chemistry-bio-medical grouping that mirrors the hierarchical core
+    sub-structure.
+    """
+    w = normalize(x * (idf ** PRIMARY_ALPHA))
+    rows = []
+    for k in (3, 4, 5, 6):
+        hier = fcluster(linkage(pdist(w, metric="cosine"), method=LINKAGE_METHOD), t=k, criterion="maxclust")
+        kmeans = KMeans(n_clusters=k, random_state=42, n_init=50).fit_predict(w)
+        rows.append(
+            {
+                "k": k,
+                "ari_hier_vs_kmeans": round(adjusted_rand_score(hier, kmeans), 3),
+                "nmi_hier_vs_kmeans": round(normalized_mutual_info_score(hier, kmeans), 3),
+            }
+        )
+    table = pd.DataFrame(rows)
+    table.to_csv(REPORT_TABLES / "kmeans_vs_hierarchical.csv", index=False, encoding="utf-8-sig")
+    return table
+
+
 def plot_dendrogram(z: np.ndarray, matrix: pd.DataFrame, name_col: str) -> None:
     labels = [f"{i} {n}" for i, n in zip(matrix["department_id"], matrix[name_col])]
     plt.figure(figsize=(13, 7))
@@ -303,6 +333,7 @@ def main() -> None:
     sens = sensitivity(x, idf)
     robust = robustness(matrix, name_col, x, idf, labels)
     subclusters = subcluster_core(matrix, name_col, course_columns, labels)
+    km_compare = kmeans_comparison(x, idf)
 
     print(f"input={INPUT_MATRIX.name}  departments={len(matrix)}  features={len(course_columns)}")
     if not type_idf.empty:
@@ -319,6 +350,9 @@ def main() -> None:
     print(f"\ncore sub-clusters (largest primary cluster, local IDF, {SUB_LINKAGE}, k={CORE_SUBCLUSTERS_K}):")
     for _, r in subclusters.iterrows():
         print(f"  S{r['subcluster_id']} (n={r['n']}): {r['departments']}")
+    print("\nhierarchical vs k-means agreement (IDF vectors):")
+    for _, r in km_compare.iterrows():
+        print(f"  k={int(r['k'])}: ARI={r['ari_hier_vs_kmeans']}, NMI={r['nmi_hier_vs_kmeans']}")
     print("\noutputs -> results/tables/keep_for_report (idf_*, course_idf_weights, "
           "weighting_sensitivity, cluster_robustness, core_subclusters), "
           "results/figures/keep_for_report/{idf_dendrogram,idf_core_subdendrogram}.png")
