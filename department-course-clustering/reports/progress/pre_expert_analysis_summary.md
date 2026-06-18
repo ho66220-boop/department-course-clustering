@@ -18,6 +18,6 @@ Current framing:
 - The selected departments are a purposive sample, not a statistically representative sample.
 - The current scope uses 25 departments.
 - Course-feature values should be binary: `1` if a related high-school elective subject is listed in `학과 과목 선택 가이드.xlsx`, and `0` if it is not listed.
-- Expert card-sorting validation is now in progress as an external-validation component, reported in the Final Report; admission score feasibility and candidate generation remain future work.
+- Expert card-sorting validation is complete (14 consultants) and externally validates the IDF clustering (k=4 ARI 0.85 vs binary 0.59); admission score feasibility and candidate generation remain future work.
 
 Earlier weighted outputs and `pre_expert` file names should not be used as the main Progress-stage evidence unless they are explicitly regenerated and reframed under the current scope.

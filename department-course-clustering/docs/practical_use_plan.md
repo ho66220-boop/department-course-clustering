@@ -35,7 +35,7 @@ This workflow is not implemented as part of the current simplified project.
 
 ## Expert Validation (In Progress)
 
-Expert card-sorting validation — expert consensus, the comparison between course-based similarity and expert co-grouping, and disagreement-case analysis — is already in progress and is reported in the Final Report (see the project README, Section 8). It is a validation component, separate from the practical-use workflow described above.
+Expert card-sorting validation — expert consensus, the comparison between course-based similarity and expert co-grouping, and disagreement-case analysis — is complete and externally validates the IDF clustering (see the project README, Section 8). It is a validation component, separate from the practical-use workflow described above.
 
 ## Future Extensions
 

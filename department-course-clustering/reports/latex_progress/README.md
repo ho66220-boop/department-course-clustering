@@ -1,9 +1,11 @@
 # Progress Report LaTeX Upload
 
-Upload these files to Overleaf:
+Upload these files to Overleaf (all figures referenced by `main.tex`):
 
 - `main.tex`
-- `idf_dendrogram.png` (figure referenced by `main.tex`)
+- `idf_dendrogram.png`
+- `cardsort_cooccurrence_heatmap.png`
+- `cardsort_agreement_bars.png`
 
 Recommended Overleaf compiler: XeLaTeX.
 

@@ -19,7 +19,7 @@
 본 연구는 고등학교 권장과목 정보가 대학 학과들을 해석 가능한 방식으로 군집화할 수 있는지를 탐색한다.
 울산 지역 산업 맥락을 반영한 25개 학과(조선해양ㆍ자동차공학 포함)를 대상으로, 흔한 과목의 영향을 줄이는 inverse document frequency(IDF) 가중 cosine similarity에 hierarchical clustering과 k-means를 적용하였다.
 IDF 가중은 무가중 baseline에서 하나로 뭉치던 STEM 학과들을 공학-자연 코어와 의약-보건 군집으로 분리하였고, 학과 계열 구조와의 일치도를 향상시켰다(ARI $0.32\to0.47$).
-외부 검증을 위한 현직 입시교사 14명 대상 card sorting을 병행 진행 중이다.
+외부 검증으로 현직 입시 컨설턴트 14명의 card sorting과 비교한 결과, IDF 군집이 전문가 합의와 강하게 일치하였다($k=4$ ARI $0.85$; binary는 $0.59$).
 \end{abstract}
 
 \section{Introduction \& Data}
@@ -78,18 +78,39 @@ IDF 가중은 무가중 baseline에서 하나로 뭉치던 STEM 학과들을 공
 
 \section{Expert Validation --- Card Sorting}
 
-내부 평가 지표는 군집의 기하학적 특성만 측정하므로, 본 연구는 외부 기준으로 현직 입시교사 14명의 card sorting 결과를 활용한다.
-Task는 open card sort이며, 25개 학과 카드를 ``권장과목 관점에서 비슷한 학과끼리'' 그룹 수 제한 없이 자유롭게 분류한다(평가자의 독립적 직관을 최대한 보존하기 위해 사전 $k$를 강제하지 않는다).
-Analysis 단계에서는 14명 분류를 $25 \times 25$ co-occurrence(동시분류 빈도) matrix로 집계하여 consensus clustering을 도출하고, 이를 $k=4$ㆍ$k=6$ 수준에서 잘라 hierarchical/k-means 결과와 Adjusted Rand Index(ARI), Normalized Mutual Information(NMI), pairwise agreement로 비교한다.
-현재 템플릿 설계는 완료되었으며 W14에 응답 수집, Final Report에서 정량 일치도를 보고한다.
+내부 평가 지표는 군집의 기하학적 특성만 측정하므로, 본 연구는 외부 기준으로 현직 입시 컨설턴트 14명의 card sorting 결과를 활용한다.
+Task는 open card sort이며, 25개 학과 카드를 ``권장과목 관점에서 비슷한 학과끼리'' 그룹 수 제한 없이 자유롭게 분류한다(사전 $k$ 미강제).
+14명 분류를 $25 \times 25$ 동시분류(co-occurrence) matrix로 집계하여 consensus clustering을 도출하고, 알고리즘 군집과 Adjusted Rand Index(ARI), Normalized Mutual Information(NMI)로 비교하였다.
+
+\begin{figure}[t]
+  \centering
+  \includegraphics[width=\linewidth]{cardsort_cooccurrence_heatmap.png}
+  \caption{전문가 동시분류 행렬(14명, consensus 군집 순서). 의약-보건 블록과 강한 사회ㆍ인문 블록이 뚜렷하며, 건축ㆍ디자인은 어떤 학과와도 동시분류율이 낮다.}
+  \label{fig:cardsort_heatmap}
+\end{figure}
+
+Consensus 군집은 (i) 사회ㆍ인문 7개, (ii) 의약-보건(의예ㆍ약학ㆍ간호), (iii) 건축ㆍ디자인, (iv) 공학-자연 13개로 나타났다.
+알고리즘 군집과의 일치도는 IDF 가중이 binary보다 뚜렷이 높았다(Fig.~\ref{fig:cardsort_bars}).
+$k=3$(거시 구조)에서는 양쪽 모두 ARI $0.84$로 견고하나, $k=4$에서 IDF는 ARI $0.85$로 전문가 합의와 일치하는 반면 binary는 $0.59$로 급락한다.
+binary는 의약-보건을 분리하지 못해($k=7$에서야 분리) 4번째 군집을 무의미한 singleton에 소비하는 반면, IDF와 전문가는 모두 의약-보건을 분리하기 때문이다.
+cut에 무관한 지표로도 동시분류율과 IDF cosine similarity는 양의 상관을 보였다($r=0.68$).
+
+\begin{figure}[t]
+  \centering
+  \includegraphics[width=\linewidth]{cardsort_agreement_bars.png}
+  \caption{알고리즘 군집 vs 전문가 합의의 ARI. $k=4$에서 IDF(0.85)가 binary(0.59)를 크게 앞선다.}
+  \label{fig:cardsort_bars}
+\end{figure}
+
+다만 의약-보건에 화학ㆍ생명ㆍ식품영양을 포함하는 광의의 바이오-보건 경계는 전문가 사이에서도 갈렸으며, 건축ㆍ디자인은 최대 동시분류율이 $0.14$에 불과해 가장 합의가 어려운 boundary 학과로 확인되었다.
 
 \section{Limitations \& Next Steps}
 
 본 연구의 한계는 다음과 같다.
 첫째, 25개 학과는 목적 표본이므로 일반화에 한계가 있다.
 둘째, IDF 가중이 의약-보건을 분리했으나 14개 공학-자연 학과가 여전히 한 코어를 형성하여, 수학ㆍ과학 과목명만으로는 세부 전공 차이를 충분히 반영하지 못하는 권장과목 해상도의 한계를 시사한다.
-셋째, card sorting 응답은 아직 수집 전이다.
+셋째, 전문가 패널은 입시 컨설턴트 14명으로 제한적이며, 1명은 과도하게 세분(16개 그룹)하여 민감도 분석으로 별도 처리하였다.
 
-Final report에서는 (a) card sorting 기반 ARI/NMI 일치도 분석, (b) 본 보고서에서 제시한 코어 sub-clustering의 안정성 심화 및 boundary 사례 분석, (c) hierarchical과 k-means 할당 일치도 비교를 진행한다.
+Final report에서는 (a) 의약-보건/바이오 경계 및 건축ㆍ디자인 boundary 사례의 정성 분석, (b) 본 보고서에서 제시한 코어 sub-clustering의 안정성 심화, (c) hierarchical과 k-means 할당 일치도 비교를 진행한다.
 
 \end{document}

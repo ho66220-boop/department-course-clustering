@@ -77,9 +77,9 @@ The Progress Meeting should focus on:
 
 This is sufficient for the Progress Meeting requirement of implementing at least one clustering method and presenting preliminary results.
 
-## Expert Validation (In Progress)
+## Expert Validation (Complete)
 
-Expert card-sorting validation is an active component, distinct from the Progress Meeting core clustering analysis. Practicing admission counselors independently group the 25 departments by recommended-course similarity in an open card sort; responses are aggregated into a 25-by-25 co-occurrence matrix and compared with the clustering output using ARI, NMI, and pairwise agreement. The instrument is finalized in `templates/card_sorting/`; collection is scheduled for W14 and results are reported in the Final Report. This component includes the comparison between course-based similarity and expert co-grouping and the analysis of disagreement cases.
+Expert card-sorting validation is complete, distinct from the Progress Meeting core clustering analysis. Fourteen practicing admission consultants independently grouped the 25 departments by recommended-course similarity in an open card sort; responses were aggregated into a 25-by-25 co-occurrence matrix and compared with the clustering output using ARI and NMI. The IDF clustering matches the expert consensus much better than the binary baseline (k=4 ARI 0.85 vs 0.59; co-occurrence vs IDF cosine r=0.68), externally validating the IDF choice. The medical/bio-health boundary is genuinely fuzzy among experts, and 건축/디자인 are the least-agreed boundary departments (max co-classification 0.14). Reproduced by `src/build_card_sorting_analysis.py`.
 
 ## Future Work
 
