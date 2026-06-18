@@ -46,6 +46,7 @@ results/tables/*
 !results/figures/keep_for_report/*.png
 !results/tables/keep_for_report/
 !results/tables/keep_for_report/*.csv
+!results/tables/keep_for_report/*.tex
 
 # Local report builds
 *.aux
