@@ -54,3 +54,33 @@ results/tables/*
 *.out
 *.synctex.gz
 *.toc
+
+# Legacy / superseded analysis artifacts (kept locally, excluded from the repo)
+data/processed/department_course_matrix_weighted.csv
+data/processed/department_course_matrix_refined_weighted.csv
+data/processed/course_similarity_matrix_weighted.csv
+data/processed/course_similarity_matrix_refined_weighted.csv
+data/processed/course_similarity_matrix_binary.csv
+data/processed/course_similarity_matrix_refined_binary.csv
+data/processed/cluster_assignments_pre_expert.csv
+data/processed/cluster_assignments_refined_pre_expert.csv
+data/processed/department_pair_pre_expert.csv
+data/processed/department_pair_refined_pre_expert.csv
+data/processed/admission_score_summary.csv
+results/tables/keep_for_report/cluster_assignments_pre_expert.csv
+results/tables/keep_for_report/cluster_assignments_refined_pre_expert.csv
+results/tables/keep_for_report/kmeans_internal_metrics_pre_expert.csv
+results/tables/keep_for_report/top30_course_similarity_pairs.csv
+results/tables/keep_for_report/top30_refined_course_similarity_pairs.csv
+results/figures/keep_for_report/course_similarity_heatmap_binary.png
+results/figures/keep_for_report/course_similarity_heatmap_refined_binary.png
+results/figures/keep_for_report/dendrogram_average_binary.png
+results/figures/keep_for_report/dendrogram_average_refined_binary.png
+
+# Legacy / one-off scripts (kept locally, excluded from the repo)
+src/build_pre_expert_analysis.py
+src/fill_raw_from_external.py
+src/collect_careernet_majors.py
+src/create_raw_templates.py
+src/sync_raw_25_scope.py
+src/update_card_sorting_25.py
