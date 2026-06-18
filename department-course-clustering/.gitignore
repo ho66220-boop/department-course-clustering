@@ -19,6 +19,9 @@ data/external/private/*
 *response*.xlsx
 *admission*.xlsx
 *private*.xlsx
+# Completed card-sorting responses contain real respondent names (keep out of git)
+*조사완료*.xlsx
+CardSorting_master_조사완료.xlsx
 !templates/card_sorting/*.xlsx
 
 # Keep public raw templates
