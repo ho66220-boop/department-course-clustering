@@ -5,7 +5,7 @@ D01,건축학과,engineering_design_boundary,Boundary case between engineering a
 D01,건축학과,engineering_design_boundary,Boundary case between engineering and design/planning,career_elective,미적분Ⅱ,미적분Ⅱ,1,학과 과목 선택 가이드.xlsx
 D01,건축학과,engineering_design_boundary,Boundary case between engineering and design/planning,career_elective,역학과 에너지,역학과 에너지,1,학과 과목 선택 가이드.xlsx
 D01,건축학과,engineering_design_boundary,Boundary case between engineering and design/planning,career_elective,지구시스템과학,지구시스템과학,1,학과 과목 선택 가이드.xlsx
-D01,건축학과,engineering_design_boundary,Boundary case between engineering and design/planning,career_elective,한국지리탐구,한국지리탐구,1,학과 과목 선택 가이드.xlsx
+D01,건축학과,engineering_design_boundary,Boundary case between engineering and design/planning,career_elective,한국지리 탐구,한국지리 탐구,1,학과 과목 선택 가이드.xlsx
 D01,건축학과,engineering_design_boundary,Boundary case between engineering and design/planning,career_elective,화학 반응의 세계,화학 반응의 세계,1,학과 과목 선택 가이드.xlsx
 D01,건축학과,engineering_design_boundary,Boundary case between engineering and design/planning,convergence_elective,과학의 역사와 문화,과학의 역사와 문화,1,학과 과목 선택 가이드.xlsx
 D01,건축학과,engineering_design_boundary,Boundary case between engineering and design/planning,convergence_elective,기후변화와 지속가능한 세계,기후변화와 지속가능한 세계,1,학과 과목 선택 가이드.xlsx
@@ -336,7 +336,7 @@ D20,간호학과,medical_health,Biology/health-related counseling-relevant field
 D20,간호학과,medical_health,Biology/health-related counseling-relevant field,career_elective,생물의 유전,생물의 유전,1,학과 과목 선택 가이드.xlsx
 D20,간호학과,medical_health,Biology/health-related counseling-relevant field,career_elective,세포와 물질대사,세포와 물질대사,1,학과 과목 선택 가이드.xlsx
 D20,간호학과,medical_health,Biology/health-related counseling-relevant field,career_elective,윤리와 사상,윤리와 사상,1,학과 과목 선택 가이드.xlsx
-D20,간호학과,medical_health,Biology/health-related counseling-relevant field,career_elective,인공지능기초,인공지능기초,1,학과 과목 선택 가이드.xlsx
+D20,간호학과,medical_health,Biology/health-related counseling-relevant field,career_elective,인공지능 기초,인공지능 기초,1,학과 과목 선택 가이드.xlsx
 D20,간호학과,medical_health,Biology/health-related counseling-relevant field,career_elective,인문학과 윤리,인문학과 윤리,1,학과 과목 선택 가이드.xlsx
 D20,간호학과,medical_health,Biology/health-related counseling-relevant field,career_elective,화학 반응의 세계,화학 반응의 세계,1,학과 과목 선택 가이드.xlsx
 D20,간호학과,medical_health,Biology/health-related counseling-relevant field,convergence_elective,생명과학 실험,생명과학 실험,1,학과 과목 선택 가이드.xlsx
@@ -406,9 +406,9 @@ D24,컴퓨터공학과,engineering_information,Information/math-related engineer
 D24,컴퓨터공학과,engineering_information,Information/math-related engineering field,general_elective,대수,대수,1,학과 과목 선택 가이드.xlsx
 D24,컴퓨터공학과,engineering_information,Information/math-related engineering field,general_elective,물리학,물리학,1,학과 과목 선택 가이드.xlsx
 D24,컴퓨터공학과,engineering_information,Information/math-related engineering field,general_elective,미적분Ⅰ,미적분Ⅰ,1,학과 과목 선택 가이드.xlsx
+D24,컴퓨터공학과,engineering_information,Information/math-related engineering field,general_elective,영어 독해와 작문,영어 독해와 작문,1,학과 과목 선택 가이드.xlsx
 D24,컴퓨터공학과,engineering_information,Information/math-related engineering field,general_elective,영어Ⅰ,영어Ⅰ,1,학과 과목 선택 가이드.xlsx
 D24,컴퓨터공학과,engineering_information,Information/math-related engineering field,general_elective,영어Ⅱ,영어Ⅱ,1,학과 과목 선택 가이드.xlsx
-D24,컴퓨터공학과,engineering_information,Information/math-related engineering field,general_elective,영어독해와 작문,영어독해와 작문,1,학과 과목 선택 가이드.xlsx
 D24,컴퓨터공학과,engineering_information,Information/math-related engineering field,general_elective,인공지능 수학,인공지능 수학,1,학과 과목 선택 가이드.xlsx
 D24,컴퓨터공학과,engineering_information,Information/math-related engineering field,general_elective,정보,정보,1,학과 과목 선택 가이드.xlsx
 D24,컴퓨터공학과,engineering_information,Information/math-related engineering field,general_elective,확률과 통계,확률과 통계,1,학과 과목 선택 가이드.xlsx

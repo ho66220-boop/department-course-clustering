@@ -4,11 +4,11 @@ Clustering 25 academic departments from their recommended high-school course pro
 
 ## Key Results
 
-- **IDF-weighted course vectors** group the 25 departments into interpretable clusters (medical-health, an engineering-science core, social/humanities, design), and down-weighting near-ubiquitous courses recovers academic-field structure far better than raw binary vectors (ARI vs field 0.32 → 0.47).
-- **Expert validation (14 admission consultants).** Aggregating their card sorts into a consensus clustering, the IDF result matches expert consensus much better than the binary baseline — **k=4 ARI 0.85 vs 0.59** (co-occurrence vs IDF cosine r = 0.68).
+- **Robust macro structure, expert-validated.** Course profiles cluster the 25 departments into a structure that closely matches a consensus from 14 admission consultants at the macro level (**k=3 ARI 0.84**, for both IDF and binary vectors; co-occurrence vs IDF cosine r = 0.68). The top-level k=4 partition is dominated by one large STEM-health core, which both vector types reproduce.
+- **Where IDF helps.** IDF down-weights near-ubiquitous courses on a principled, parameter-free basis. It does not change the top-level k=4 partition (so it does not beat binary there), but it separates the medical-health group earlier (k=5 vs binary's k=7) and tracks expert consensus better at finer granularity (k=5–6). The interpretable sub-structure — medical-health (의예/약학/간호, bootstrap stability 0.97), a quantitative/applied group, and an engineering-chemistry group — emerges from sub-clustering the STEM-health core.
 - **Internal-vs-expert disagreement** yields counseling insights: *Type 1* (shared course preparation that consultants keep apart → overlooked alternatives) and *Type 2* (e.g. 조선해양↔자동차, grouped by consultants but preparing different electives → preparation-mismatch risk).
 
-![Algorithm clusters vs expert consensus (ARI): IDF beats binary at k=4](results/figures/keep_for_report/cardsort_agreement_bars.png)
+![Algorithm clusters vs expert consensus (ARI): k=3 agreement is strong for both; IDF leads at k=5-6](results/figures/keep_for_report/cardsort_agreement_bars.png)
 
 ![IDF-weighted clustering dendrogram](results/figures/keep_for_report/idf_dendrogram.png)
 

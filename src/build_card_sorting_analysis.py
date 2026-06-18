@@ -196,7 +196,7 @@ def fig_agreement(agreement: pd.DataFrame) -> None:
     plt.xticks(x, [f"k={k}" for k in ks])
     plt.ylabel("Adjusted Rand Index (전문가 합의와의 일치도)")
     plt.ylim(0, 1)
-    plt.title("알고리즘 군집 vs 전문가 합의: IDF가 binary보다 일치")
+    plt.title("알고리즘 군집 vs 전문가 합의 (ARI): k=3 강건 일치, k=5–6 IDF 우위")
     plt.legend()
     plt.tight_layout()
     plt.savefig(REPORT_FIGURES / "cardsort_agreement_bars.png", dpi=200)

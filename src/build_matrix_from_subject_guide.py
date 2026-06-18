@@ -73,6 +73,10 @@ COURSE_REPLACEMENTS = {
     "창의 공학 설계": "창의공학 설계",
     "정보등": "정보",
     "인묵학과 윤리": "인문학과 윤리",
+    # Whitespace variants of the same official course name (unify to the spaced form)
+    "영어독해와 작문": "영어 독해와 작문",
+    "인공지능기초": "인공지능 기초",
+    "한국지리탐구": "한국지리 탐구",
 }
 
 
