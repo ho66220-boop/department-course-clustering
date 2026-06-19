@@ -23,6 +23,12 @@ from __future__ import annotations
 
 import itertools
 import pathlib
+import sys
+
+try:                                  # keep Korean/em-dash prints from crashing on cp949 pipes
+    sys.stdout.reconfigure(encoding="utf-8")
+except (AttributeError, ValueError):
+    pass
 
 import matplotlib
 import matplotlib.pyplot as plt
@@ -47,6 +53,8 @@ RATER_FIRST_COL, RATER_LAST_COL = 3, 16   # 평가 columns C..P (14 raters)
 DEPT_FIRST_ROW, DEPT_LAST_ROW = 6, 30     # 25 departments
 NAME_COL = 2
 K_PRIMARY = 4
+BOOTSTRAP_B = 1000                 # rater resamples for consensus stability + ARI CI
+BOOTSTRAP_SEED = 42
 
 
 def setup_style() -> None:
@@ -152,6 +160,73 @@ def disagreement_pairs(co: np.ndarray, names) -> pd.DataFrame:
     return pairs
 
 
+def bootstrap_expert(responses: pd.DataFrame, names, ref_k4: np.ndarray,
+                     ks=(3, 4, 5, 6)) -> tuple[pd.DataFrame, pd.DataFrame]:
+    """Resample the 14 raters with replacement (B times) to put bootstrap CIs on
+    (1) per-consensus-cluster stability at k=4 (Hennig clusterboot Jaccard) and
+    (2) the consensus-vs-algorithm ARI at each k.
+
+    The 14-rater panel itself is the population being resampled, so the lone
+    over-splitter (16 groups) is included/excluded naturally and its effect shows
+    up in the CI width rather than being removed by hand.
+    """
+    m = responses.to_numpy()
+    n_raters = responses.shape[1]
+    algo = {k: algorithm_clusters(k) for k in ks}            # fixed; rater-independent
+    ref_sets = {lab: set(np.where(ref_k4 == lab)[0]) for lab in sorted(set(ref_k4))}
+
+    rng = np.random.default_rng(BOOTSTRAP_SEED)
+    jac = {lab: [] for lab in ref_sets}
+    ari = {k: {"idf": [], "binary": []} for k in ks}
+    for _ in range(BOOTSTRAP_B):
+        idx = rng.integers(0, n_raters, size=n_raters)
+        boot = pd.DataFrame(m[:, idx])
+        co_b = co_occurrence(boot)
+        z_b = consensus_linkage(co_b)
+        for k in ks:
+            cons_k = fcluster(z_b, t=k, criterion="maxclust")
+            idf_k, bin_k = algo[k]
+            ari[k]["idf"].append(adjusted_rand_score(cons_k, [idf_k[nm] for nm in names]))
+            ari[k]["binary"].append(adjusted_rand_score(cons_k, [bin_k[nm] for nm in names]))
+            if k == K_PRIMARY:
+                boot_sets = [set(np.where(cons_k == lab)[0]) for lab in set(cons_k)]
+                for lab, rs in ref_sets.items():
+                    jac[lab].append(max(len(rs & bs) / len(rs | bs) for bs in boot_sets))
+
+    stab_rows = []
+    for lab, rs in ref_sets.items():
+        vals = np.array(jac[lab])
+        lo, hi = np.percentile(vals, [2.5, 97.5])
+        members = sorted(rs)
+        stab_rows.append(
+            {
+                "consensus_cluster": int(lab),
+                "n": len(members),
+                "departments": "; ".join(np.array(names)[members]),
+                "jaccard_mean": round(float(vals.mean()), 3),
+                "ci_low": round(float(lo), 3),
+                "ci_high": round(float(hi), 3),
+            }
+        )
+    stability = pd.DataFrame(stab_rows).sort_values("consensus_cluster")
+    stability.to_csv(REPORT_TABLES / "cardsort_consensus_stability.csv", index=False, encoding="utf-8-sig")
+
+    ci_rows = []
+    for k in ks:
+        ilo, ihi = np.percentile(ari[k]["idf"], [2.5, 97.5])
+        blo, bhi = np.percentile(ari[k]["binary"], [2.5, 97.5])
+        ci_rows.append(
+            {
+                "k": k,
+                "ari_idf_low": round(float(ilo), 3), "ari_idf_high": round(float(ihi), 3),
+                "ari_binary_low": round(float(blo), 3), "ari_binary_high": round(float(bhi), 3),
+            }
+        )
+    ari_ci = pd.DataFrame(ci_rows)
+    ari_ci.to_csv(REPORT_TABLES / "cardsort_agreement_ci.csv", index=False, encoding="utf-8-sig")
+    return stability, ari_ci
+
+
 # --------------------------------------------------------------------------- figures
 def fig_heatmap(co: np.ndarray, names, order, clusters) -> None:
     ordered = co[np.ix_(order, order)]
@@ -183,20 +258,29 @@ def fig_dendrogram(z: np.ndarray, names) -> None:
     plt.close()
 
 
-def fig_agreement(agreement: pd.DataFrame) -> None:
+def fig_agreement(agreement: pd.DataFrame, ari_ci: pd.DataFrame | None = None) -> None:
     ks = agreement["k"].tolist()
     x = np.arange(len(ks))
     w = 0.38
+    yerr_idf = yerr_bin = None
+    if ari_ci is not None:
+        c = ari_ci.set_index("k").loc[ks]
+        yerr_idf = np.vstack([agreement["ari_vs_idf"].to_numpy() - c["ari_idf_low"].to_numpy(),
+                              c["ari_idf_high"].to_numpy() - agreement["ari_vs_idf"].to_numpy()])
+        yerr_bin = np.vstack([agreement["ari_vs_binary"].to_numpy() - c["ari_binary_low"].to_numpy(),
+                              c["ari_binary_high"].to_numpy() - agreement["ari_vs_binary"].to_numpy()])
     plt.figure(figsize=(7, 4.5))
-    plt.bar(x - w / 2, agreement["ari_vs_idf"], w, label="vs IDF (main)", color="#2c7fb8")
-    plt.bar(x + w / 2, agreement["ari_vs_binary"], w, label="vs binary (baseline)", color="#bdbdbd")
+    plt.bar(x - w / 2, agreement["ari_vs_idf"], w, label="vs IDF (main)", color="#2c7fb8",
+            yerr=yerr_idf, capsize=3, ecolor="#08519c")
+    plt.bar(x + w / 2, agreement["ari_vs_binary"], w, label="vs binary (baseline)", color="#bdbdbd",
+            yerr=yerr_bin, capsize=3, ecolor="#636363")
     for xi, (vi, vb) in enumerate(zip(agreement["ari_vs_idf"], agreement["ari_vs_binary"])):
         plt.text(xi - w / 2, vi + 0.01, f"{vi:.2f}", ha="center", fontsize=9)
         plt.text(xi + w / 2, vb + 0.01, f"{vb:.2f}", ha="center", fontsize=9)
     plt.xticks(x, [f"k={k}" for k in ks])
     plt.ylabel("Adjusted Rand Index (전문가 합의와의 일치도)")
     plt.ylim(0, 1)
-    plt.title("알고리즘 군집 vs 전문가 합의 (ARI): k=3 강건 일치, k=5–6 IDF 우위")
+    plt.title("알고리즘 군집 vs 전문가 합의 ARI (오차막대: rater 부트스트랩 95% CI, B=1000)")
     plt.legend()
     plt.tight_layout()
     plt.savefig(REPORT_FIGURES / "cardsort_agreement_bars.png", dpi=200)
@@ -279,9 +363,10 @@ def main() -> None:
     agreement = pd.DataFrame(agreement_rows)
 
     idf_k4, bin_k4 = algorithm_clusters(K_PRIMARY)
+    stability, ari_ci = bootstrap_expert(responses, names, clusters_k4)
     fig_heatmap(co, names, order, cluster_map)
     fig_dendrogram(z, names)
-    fig_agreement(agreement)
+    fig_agreement(agreement, ari_ci)
     r = fig_scatter(co, names)
     write_tables(co, names, clusters_k4, idf_k4, bin_k4, agreement)
     disagree = disagreement_pairs(co, names)
@@ -293,6 +378,14 @@ def main() -> None:
     print("\nconsensus k=4 clusters:")
     for c in sorted(set(clusters_k4)):
         print(f"  CC{c}: " + ", ".join(np.array(names)[clusters_k4 == c]))
+    print(f"\nconsensus stability (rater bootstrap, B={BOOTSTRAP_B}, Jaccard mean [95% CI]):")
+    for _, row in stability.iterrows():
+        print(f"  CC{row['consensus_cluster']} (n={row['n']}): {row['jaccard_mean']} "
+              f"[{row['ci_low']}, {row['ci_high']}]  {row['departments']}")
+    print("\nagreement ARI 95% CI (rater bootstrap):")
+    for _, row in ari_ci.iterrows():
+        print(f"  k={int(row['k'])}: IDF [{row['ari_idf_low']}, {row['ari_idf_high']}]  "
+              f"binary [{row['ari_binary_low']}, {row['ari_binary_high']}]")
     print("\nType 1 (내부 O, 외부 X) — 준비기반 공유, 전문가 분리:")
     for _, row in disagree.head(4).iterrows():
         print(f"  {row['A']}-{row['B']}: idf={row['idf_cosine']}, coclass={row['co_classification']}")

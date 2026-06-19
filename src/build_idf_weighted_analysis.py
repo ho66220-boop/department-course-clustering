@@ -65,6 +65,8 @@ ALPHA_SWEEP = [round(a, 2) for a in np.linspace(0.0, 2.0, 9)]
 PRIMARY_ALPHA = 1.0                 # standard IDF, no hand tuning
 CORE_SUBCLUSTERS_K = 3              # sub-clusters within the largest primary cluster
 SUB_LINKAGE = "complete"           # sharper splits for the dense STEM-health core
+BOOTSTRAP_B = 1000                 # bootstrap resamples for cluster stability
+BOOTSTRAP_SEED = 42
 
 
 def setup_plot_style() -> None:
@@ -220,6 +222,71 @@ def robustness(matrix: pd.DataFrame, name_col: str, x: np.ndarray, idf: np.ndarr
     return table
 
 
+def _local_idf_subclusters(xc: np.ndarray, k: int) -> np.ndarray:
+    """Sub-cluster a core feature matrix with locally recomputed IDF.
+
+    `xc` is (n_core x n_features); columns are resampled features (so the same
+    course may appear more than once under a bootstrap). All-zero columns are
+    dropped before local IDF, mirroring subcluster_core.
+    """
+    present = xc.sum(axis=0) > 0
+    xcp = xc[:, present]
+    local_idf = np.log(xcp.shape[0] / xcp.sum(axis=0))
+    z = linkage(pdist(xcp * local_idf, metric="cosine"), method=SUB_LINKAGE)
+    return fcluster(z, t=k, criterion="maxclust")
+
+
+def subcluster_stability(matrix: pd.DataFrame, name_col: str, course_columns: list[str],
+                         labels: np.ndarray) -> pd.DataFrame:
+    """Feature-bootstrap stability of the core sub-clusters (Hennig clusterboot).
+
+    The 89-dim course feature space (restricted to courses present in the core)
+    is resampled with replacement B times. For each resample the core is
+    re-sub-clustered with locally recomputed IDF, and every reference sub-cluster
+    is matched to its best Jaccard overlap with the bootstrap partition. The mean
+    over B resamples is the stability point estimate; the 2.5/97.5 percentiles
+    give a 95% bootstrap CI. This replaces the earlier hand-entered 0.97/0.55/0.52.
+    """
+    core_id = pd.Series(labels).value_counts().idxmax()
+    mask = labels == core_id
+    core_names = matrix[name_col].to_numpy()[mask]
+    xc_full = matrix[course_columns].to_numpy(dtype=float)[mask]
+    present = xc_full.sum(axis=0) > 0
+    xc = xc_full[:, present]                      # core feature universe to resample
+    n_feat = xc.shape[1]
+
+    ref = _local_idf_subclusters(xc, CORE_SUBCLUSTERS_K)
+    ref_sets = {lab: set(np.where(ref == lab)[0]) for lab in sorted(set(ref))}
+
+    rng = np.random.default_rng(BOOTSTRAP_SEED)
+    samples = {lab: [] for lab in ref_sets}
+    for _ in range(BOOTSTRAP_B):
+        cols = rng.integers(0, n_feat, size=n_feat)
+        boot = _local_idf_subclusters(xc[:, cols], CORE_SUBCLUSTERS_K)
+        boot_sets = [set(np.where(boot == lab)[0]) for lab in set(boot)]
+        for lab, rs in ref_sets.items():
+            samples[lab].append(max(len(rs & bs) / len(rs | bs) for bs in boot_sets))
+
+    rows = []
+    for lab, rs in ref_sets.items():
+        vals = np.array(samples[lab])
+        lo, hi = np.percentile(vals, [2.5, 97.5])
+        members = sorted(rs)
+        rows.append(
+            {
+                "subcluster_id": int(lab),
+                "n": len(members),
+                "departments": "; ".join(core_names[members]),
+                "jaccard_mean": round(float(vals.mean()), 3),
+                "ci_low": round(float(lo), 3),
+                "ci_high": round(float(hi), 3),
+            }
+        )
+    table = pd.DataFrame(rows).sort_values("subcluster_id")
+    table.to_csv(REPORT_TABLES / "core_subcluster_stability.csv", index=False, encoding="utf-8-sig")
+    return table
+
+
 def subcluster_core(matrix: pd.DataFrame, name_col: str, course_columns: list[str],
                     labels: np.ndarray) -> pd.DataFrame:
     """Sub-cluster the largest primary cluster (the dense STEM-health core).
@@ -332,6 +399,7 @@ def main() -> None:
     sens = sensitivity(x, idf)
     robust = robustness(matrix, name_col, x, idf, labels)
     subclusters = subcluster_core(matrix, name_col, course_columns, labels)
+    sub_stability = subcluster_stability(matrix, name_col, course_columns, labels)
     km_compare = kmeans_comparison(x, idf)
 
     print(f"input={INPUT_MATRIX.name}  departments={len(matrix)}  features={len(course_columns)}")
@@ -349,6 +417,10 @@ def main() -> None:
     print(f"\ncore sub-clusters (largest primary cluster, local IDF, {SUB_LINKAGE}, k={CORE_SUBCLUSTERS_K}):")
     for _, r in subclusters.iterrows():
         print(f"  S{r['subcluster_id']} (n={r['n']}): {r['departments']}")
+    print(f"\ncore sub-cluster stability (feature bootstrap, B={BOOTSTRAP_B}, Jaccard mean [95% CI]):")
+    for _, r in sub_stability.iterrows():
+        print(f"  S{r['subcluster_id']} (n={r['n']}): {r['jaccard_mean']} "
+              f"[{r['ci_low']}, {r['ci_high']}]  {r['departments']}")
     print("\nhierarchical vs k-means agreement (IDF vectors):")
     for _, r in km_compare.iterrows():
         print(f"  k={int(r['k'])}: ARI={r['ari_hier_vs_kmeans']}, NMI={r['nmi_hier_vs_kmeans']}")
