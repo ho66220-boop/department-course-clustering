@@ -56,6 +56,8 @@ results/tables/*
 *.out
 *.synctex.gz
 *.toc
+*.fls
+*.fdb_latexmk
 
 # Legacy / superseded analysis artifacts (kept locally, excluded from the repo)
 data/processed/department_course_matrix_weighted.csv
@@ -91,6 +93,7 @@ src/update_card_sorting_25.py
 reference_progress_file
 reference_structure.pptx
 reports/latex_progress_upload.zip
+reports/final/v2_upload.zip
 
 # Office lock/temp files
 ~$*
